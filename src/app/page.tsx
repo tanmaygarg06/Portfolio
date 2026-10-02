@@ -195,7 +195,7 @@ export default function Home() {
       {/* Portrait Widget */}
       <motion.div drag dragMomentum={false} className="absolute top-24 left-1/2 -translate-x-1/2 w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 hidden lg:flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl">
         <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full z-10" />
-        <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' }} />
+        <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
       </motion.div>
 
       {/* Status Widget */}

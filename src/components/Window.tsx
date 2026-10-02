@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import { X, Minus, Maximize2 } from "lucide-react";
 import { useState } from "react";
 
@@ -17,6 +17,7 @@ interface WindowProps {
 
 export default function Window({ id, title, vol, isOpen, onClose, children, zIndex, onFocus, initialMaximized = false }: WindowProps) {
   const [isMaximized, setIsMaximized] = useState(initialMaximized);
+  const dragControls = useDragControls();
 
   if (!isOpen) return null;
 
@@ -37,7 +38,8 @@ export default function Window({ id, title, vol, isOpen, onClose, children, zInd
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ type: "spring", damping: 25, stiffness: 300 }}
       drag={!isMaximized}
-      dragHandle=".title-bar"
+      dragControls={dragControls}
+      dragListener={false}
       dragMomentum={false}
       onClick={onFocus}
       style={{ zIndex }}
@@ -46,7 +48,10 @@ export default function Window({ id, title, vol, isOpen, onClose, children, zInd
       }`}
     >
       {/* Title Bar */}
-      <div className="title-bar h-12 flex items-center justify-between px-4 border-b border-white/5 cursor-grab active:cursor-grabbing bg-white/5 shrink-0">
+      <div 
+        className="title-bar h-12 flex items-center justify-between px-4 border-b border-white/5 cursor-grab active:cursor-grabbing bg-white/5 shrink-0"
+        onPointerDown={(e) => dragControls.start(e)}
+      >
         <div className="flex space-x-2 w-20">
           <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="w-3.5 h-3.5 rounded-full bg-[#ff5f56] flex items-center justify-center hover:bg-[#ff5f56]/80 transition-colors shadow-sm">
             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
