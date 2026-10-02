@@ -1,69 +1,474 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Award, Send } from "lucide-react";
+import Dock from "@/components/Dock";
+import Window from "@/components/Window";
+import { content } from "@/data/content";
 
 export default function Home() {
+  const [time, setTime] = useState<Date | null>(null);
+  const [activeWindows, setActiveWindows] = useState<{id: string, zIndex: number}[]>([]);
+  const [maxZIndex, setMaxZIndex] = useState(50);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Contact Form State
+  const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
+  const [sendError, setSendError] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    setTime(new Date());
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setQuoteIndex(prev => (prev + 1) % ((content as any).widgets.quotes.length));
+    }, 15000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const openWindow = (id: string) => {
+    if (!activeWindows.find(w => w.id === id)) {
+      setActiveWindows([...activeWindows, { id, zIndex: maxZIndex + 1 }]);
+      setMaxZIndex(maxZIndex + 1);
+    } else {
+      focusWindow(id);
+    }
+  };
+
+  const closeWindow = (id: string) => {
+    setActiveWindows(activeWindows.filter(w => w.id !== id));
+  };
+
+  const focusWindow = (id: string) => {
+    setActiveWindows(activeWindows.map(w => 
+      w.id === id ? { ...w, zIndex: maxZIndex + 1 } : w
+    ));
+    setMaxZIndex(maxZIndex + 1);
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSending(true);
+    setSendError("");
+    setSendSuccess(false);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setSendSuccess(true);
+        (e.target as HTMLFormElement).reset();
+      } else {
+        setSendError(result.error || "Failed to send message.");
+      }
+    } catch (err) {
+      setSendError("An unexpected error occurred.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const protocol = time ? (
+    time.getHours() < 12 ? "MORNING PROTOCOL" 
+    : time.getHours() < 17 ? "AFTERNOON PROTOCOL"
+    : time.getHours() < 21 ? "EVENING PROTOCOL"
+    : "LATE NIGHT PROTOCOL"
+  ) : "LOADING PROTOCOL";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="h-screen w-screen overflow-hidden relative selection:bg-[#10b981]/30">
+      {/* Loading Animation */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] bg-[#0a0a0b] flex flex-col items-center justify-center"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
+            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8">
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="title-serif text-4xl md:text-5xl text-white mb-8 tracking-wide text-center"
+              >
+                {content.hero.fullName}
+              </motion.h1>
+
+              <div className="w-full">
+                <div className="flex justify-between font-mono-spaced text-[9px] text-gray-500 mb-2 tracking-widest uppercase">
+                  <span>Initializing OS</span>
+                  <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }}>
+                    System.Boot()
+                  </motion.span>
+                </div>
+                <div className="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 3.5, delay: 0.4, ease: "easeInOut" }}
+                    className="h-full bg-[#10b981]"
+                  />
+                </div>
+                <div className="mt-3 font-mono-spaced text-[8px] text-gray-600 tracking-widest text-center">
+                  LOADING WORKSPACE & MODULES...
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Top Bar */}
+      <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 bg-[#0a0a0b]/80 backdrop-blur-md z-30 flex items-center justify-between px-4 text-[10px] font-mono-spaced text-gray-400">
+        <div className="w-1/3">{content.hero.firstName}</div>
+        <div className="w-1/3 text-center text-white">{time ? format(time, "EEEE, MMMM d, yyyy").toUpperCase() : ""}</div>
+        <div className="w-1/3 text-right text-gray-500">{protocol}</div>
+      </div>
+
+      {/* Hero Section */}
+      <div className="absolute top-20 left-8 md:left-16 max-w-lg z-20 pointer-events-none">
+        <h1 className="title-serif text-6xl md:text-[90px] text-white mb-2 leading-none pointer-events-auto">{content.hero.fullName}</h1>
+        <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em]">{content.hero.subtitle}</div>
+        <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
+          <p className="text-[#9a9a9a] text-lg leading-relaxed">{content.hero.bio}</p>
         </div>
-      </main>
-    </div>
+        <div className="flex items-center gap-6 pointer-events-auto">
+          <button onClick={() => openWindow("contact")} className="bg-white text-black px-6 py-3 rounded-md font-mono-spaced text-[10px] font-bold hover:bg-gray-200 transition-colors flex items-center gap-2">
+            START PROJECT <ArrowUpRight className="w-4 h-4" />
+          </button>
+          <button onClick={() => openWindow("resume")} className="text-gray-400 hover:text-white font-mono-spaced text-[10px] transition-colors">
+            READ RESUME
+          </button>
+        </div>
+      </div>
+
+      {/* Leadership Widget */}
+      <motion.div drag dragMomentum={false} className="absolute bottom-20 left-8 md:left-12 w-[380px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
+        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+        <div className="flex justify-between items-center mb-5">
+          <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#10b981]" /> LEADERSHIP
+          </span>
+          <button onClick={() => openWindow("leadership")} className="font-mono-spaced text-[10px] text-white hover:text-gray-300">VIEW ALL ↗</button>
+        </div>
+        <div className="space-y-4">
+          {(content.widgets as any).leadership.slice(0, 1).map((item: any, i: number) => (
+            <div key={i} className="relative pl-4 border-l border-white/10">
+              <div className="absolute w-1.5 h-1.5 bg-white/50 rounded-full -left-[3px] top-1.5" />
+              <h4 className="text-white font-bold text-sm leading-tight mb-1">{item.role}</h4>
+              <div className="font-mono-spaced text-[9px] text-[#10b981] mb-1.5">{item.club} • {item.year}</div>
+              {item.description && <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">{item.description}</p>}
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Portrait Widget */}
+      <motion.div drag dragMomentum={false} className="absolute top-24 left-1/2 -translate-x-1/2 w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 hidden lg:flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full z-10" />
+        <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' }} />
+      </motion.div>
+
+      {/* Status Widget */}
+      <motion.div drag dragMomentum={false} className="absolute top-20 right-20 w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
+        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+          <span className="font-mono-spaced text-[10px] text-gray-500">{content.widgets.status.label}</span>
+        </div>
+        <div className="text-sm text-gray-300">{content.widgets.status.text}</div>
+      </motion.div>
+
+      {/* Quote Widget */}
+      <motion.div drag dragMomentum={false} className="absolute top-52 right-16 w-80 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
+        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-6" />
+        <div className="relative h-[110px] w-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={quoteIndex}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 flex flex-col"
+            >
+              <p className="text-white font-medium text-lg leading-snug mb-auto">"{((content as any).widgets.quotes)[quoteIndex].text}"</p>
+              <div className="text-right mt-2">
+                <span className="font-mono-spaced text-[10px] text-gray-500">{((content as any).widgets.quotes)[quoteIndex].author}</span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        <div className="flex justify-between items-center mt-6">
+          <div className="flex gap-1">
+            {((content as any).widgets.quotes).map((_: any, idx: number) => (
+              <div key={idx} className={`h-1.5 rounded-full transition-all duration-500 ${idx === quoteIndex ? 'w-4 bg-white/80' : 'w-1.5 bg-white/20'}`} />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Last Played Widget */}
+      <motion.div drag dragMomentum={false} className="absolute bottom-48 left-1/2 -translate-x-1/2 w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing hidden xl:flex gap-4 items-center shadow-2xl">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
+        <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover mt-2" />
+        <div className="flex-1 mt-2">
+          <div className="font-mono-spaced text-[9px] text-gray-500 mb-1">LAST PLAYED</div>
+          <div className="text-white font-bold text-sm leading-tight">{content.widgets.lastPlayed.track}</div>
+          <div className="text-gray-400 text-[10px] mt-0.5">{content.widgets.lastPlayed.artist}</div>
+        </div>
+        <div className="flex items-end gap-[3px] h-6 opacity-80 mt-2">
+          <motion.div animate={{ height: [4, 16, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+          <motion.div animate={{ height: [10, 20, 10] }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+          <motion.div animate={{ height: [6, 12, 6] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+        </div>
+      </motion.div>
+
+      {/* Codolio Heatmap Widget */}
+      <motion.div drag dragMomentum={false} className="absolute bottom-24 right-8 md:right-12 w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing hidden xl:block">
+        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">CODOLIO HEATMAP</span>
+          <div className="w-2 h-2 rounded-full bg-[#10b981]" />
+        </div>
+        <div className="grid gap-[1px] mb-3 opacity-80" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
+          {Array.from({ length: 364 }).map((_, i) => {
+            const intensity = (i * 23) % 10;
+            return (
+              <div key={i} className={`w-full aspect-square rounded-[1px] ${intensity > 7 ? 'bg-[#10b981]' : intensity > 4 ? 'bg-[#10b981]/60' : intensity > 2 ? 'bg-[#10b981]/30' : 'bg-white/5'}`} />
+            );
+          })}
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <span className="text-[10px] text-gray-400">432 Problems in last year</span>
+          <div className="flex items-center gap-1 text-[9px] text-gray-500">
+            Less <div className="w-2 h-2 bg-white/5 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/30 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/60 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981] rounded-[1px]" /> More
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Dock */}
+      <Dock onOpenWindow={openWindow} activeWindows={activeWindows.map(w => w.id)} />
+
+      {/* Command Palette Placeholder (Bottom Right) */}
+      <div className="fixed bottom-6 right-6 z-40 hidden md:block">
+        <button className="px-4 py-2 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-full font-mono-spaced text-[10px] text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+          &gt; CTRL K
+        </button>
+      </div>
+
+      {/* Windows Layer */}
+      {activeWindows.find(w => w.id === "experience") && (
+        <Window id="experience" title="EXPERIENCE" vol="VOL. 02" isOpen={true} onClose={() => closeWindow("experience")} zIndex={activeWindows.find(w => w.id === "experience")!.zIndex} onFocus={() => focusWindow("experience")}>
+          <div className="space-y-8">
+            {content.experience.map((exp, i) => (
+              <div key={i} className="pb-8 border-b border-white/10 last:border-0">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      {exp.current && <span className="w-2 h-2 rounded-full bg-[#10b981]" />}
+                      {exp.company}
+                    </h3>
+                    <div className="text-[#9a9a9a] italic">{exp.role}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono-spaced text-[10px] text-gray-400">{exp.date}</div>
+                    <div className="text-[10px] text-gray-500 mt-1">{exp.location}</div>
+                  </div>
+                </div>
+                <p className="text-gray-300 mb-4 text-sm leading-relaxed">{exp.description}</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
+                  <div className="flex flex-wrap gap-2">
+                    {exp.tags.map(tag => (
+                      <span key={tag} className="font-mono-spaced text-[9px] text-gray-400 border border-white/10 bg-white/5 px-2 py-1 rounded-md">{tag}</span>
+                    ))}
+                  </div>
+                  {(exp as any).github && (
+                    <a href={(exp as any).github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-mono-spaced text-white bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-md border border-white/10">
+                      GITHUB <ArrowUpRight className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Window>
+      )}
+
+      {activeWindows.find(w => w.id === "leadership") && (
+        <Window id="leadership" title="LEADERSHIP" isOpen={true} onClose={() => closeWindow("leadership")} zIndex={activeWindows.find(w => w.id === "leadership")!.zIndex} onFocus={() => focusWindow("leadership")}>
+          <div className="space-y-8">
+            {((content as any).widgets.leadership).map((item: any, i: number) => (
+              <div key={i} className="pb-8 border-b border-white/10 last:border-0 relative pl-4">
+                <div className="absolute w-2 h-2 bg-white/50 rounded-full -left-[4px] top-2.5" />
+                <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
+                  {item.role}
+                </h3>
+                <div className="font-mono-spaced text-[10px] text-[#10b981] mb-3">{item.club} • {item.year}</div>
+                {item.description && <p className="text-gray-300 text-sm leading-relaxed">{item.description}</p>}
+              </div>
+            ))}
+          </div>
+        </Window>
+      )}
+
+      {activeWindows.find(w => w.id === "projects") && (
+        <Window id="projects" title="PROJECTS" vol="VOL. 01" isOpen={true} onClose={() => closeWindow("projects")} zIndex={activeWindows.find(w => w.id === "projects")!.zIndex} onFocus={() => focusWindow("projects")}>
+          <div className="space-y-8">
+            {content.projects.map((proj, i) => (
+              <div key={i} className="pb-8 border-b border-white/10 last:border-0">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-white">{proj.title}</h3>
+                  <div className="font-mono-spaced text-[10px] text-gray-400">{proj.year}</div>
+                </div>
+                <p className="text-[#9a9a9a] mb-4 text-sm leading-relaxed">{proj.description}</p>
+                <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
+                  <div className="flex flex-wrap gap-2">
+                    {proj.tags.map(tag => (
+                      <span key={tag} className="font-mono-spaced text-[9px] text-gray-400 border border-white/10 bg-white/5 px-2 py-1 rounded-md">{tag}</span>
+                    ))}
+                  </div>
+                  {proj.github && (
+                    <a href={proj.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-mono-spaced text-white bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-md border border-white/10">
+                      GITHUB <ArrowUpRight className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Window>
+      )}
+
+      {activeWindows.find(w => w.id === "techstack") && (
+        <Window id="techstack" title="TECH STACK" isOpen={true} onClose={() => closeWindow("techstack")} zIndex={activeWindows.find(w => w.id === "techstack")!.zIndex} onFocus={() => focusWindow("techstack")}>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+              <span className="text-8xl font-black tracking-tighter">CLOUD</span>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 relative z-10">
+              {content.skills.map((skill, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all hover:-translate-y-1">
+                  <img src={skill.logo} alt={skill.name} className="w-8 h-8 mb-3 opacity-90" />
+                  <span className="font-mono-spaced text-[9px] text-gray-400 text-center">{skill.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Window>
+      )}
+
+      {activeWindows.find(w => w.id === "resume") && (
+        <Window initialMaximized={true} id="resume" title="RESUME" isOpen={true} onClose={() => closeWindow("resume")} zIndex={activeWindows.find(w => w.id === "resume")!.zIndex} onFocus={() => focusWindow("resume")}>
+          <div className="w-full h-full flex flex-col gap-4 min-h-[500px]">
+             <div className="flex justify-between items-center shrink-0">
+               <span className="font-mono-spaced text-[10px] text-gray-400">TANMAY_GARG_RESUME.PDF</span>
+               <a href="/resume.pdf" download className="bg-white text-black px-4 py-2 rounded-md font-mono-spaced text-[10px] font-bold hover:bg-gray-200 transition-colors">
+                 DOWNLOAD ↘
+               </a>
+             </div>
+             <div className="flex-1 w-full bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+               <iframe 
+                 src="/resume.pdf" 
+                 className="w-full h-full min-h-[600px] border-0"
+                 title="Resume PDF"
+               />
+             </div>
+          </div>
+        </Window>
+      )}
+      
+      {activeWindows.find(w => w.id === "certifications") && (
+        <Window id="certifications" title="CERTIFICATIONS" isOpen={true} onClose={() => closeWindow("certifications")} zIndex={activeWindows.find(w => w.id === "certifications")!.zIndex} onFocus={() => focusWindow("certifications")}>
+          <div className="space-y-8">
+            {((content as any).certifications?.all || (content as any).certifications).map((cert: any, i: number) => (
+              <div key={i} className="pb-8 border-b border-white/10 last:border-0">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Award className="w-5 h-5 text-[#10b981]" />
+                    {cert.title}
+                  </h3>
+                  <div className="font-mono-spaced text-[10px] text-gray-400">{cert.date}</div>
+                </div>
+                <p className="text-[#9a9a9a] mb-4 text-sm leading-relaxed">{cert.issuer}</p>
+                {cert.link && (
+                  <a href={cert.link} target="_blank" rel="noreferrer" className="font-mono-spaced text-[10px] text-black bg-white px-3 py-1.5 rounded-md hover:bg-gray-200 transition-colors inline-block font-bold">VALIDATE CERTIFICATE ↗</a>
+                )}
+              </div>
+            ))}
+          </div>
+        </Window>
+      )}
+      
+      {activeWindows.find(w => w.id === "contact") && (
+        <Window id="contact" title="Get In Touch" isOpen={true} onClose={() => closeWindow("contact")} zIndex={activeWindows.find(w => w.id === "contact")!.zIndex} onFocus={() => focusWindow("contact")}>
+          <div className="flex flex-col h-full bg-[#0a0a0b] -m-8 p-6 text-white relative min-h-[420px]">
+            {/* Header matches screenshot strictly */}
+            <div className="mb-4">
+              <h1 className="text-3xl font-bold mb-1">Get In Touch</h1>
+              <p className="font-mono-spaced text-[9px] text-gray-500 tracking-widest">LET'S BUILD SOMETHING GREAT</p>
+            </div>
+            
+            {/* Form matches screenshot strictly */}
+            <form onSubmit={handleContactSubmit} className="flex-1 flex flex-col gap-4">
+              <div>
+                <label className="block font-mono-spaced text-[10px] text-gray-400 mb-1.5 tracking-widest">YOUR NAME</label>
+                <input name="name" type="text" placeholder="John Doe" required className="w-full bg-[#111111] border border-transparent focus:border-white/20 rounded-md p-3 text-white focus:outline-none transition-colors placeholder:text-[#333] text-sm" />
+              </div>
+              <div>
+                <label className="block font-mono-spaced text-[10px] text-gray-400 mb-1.5 tracking-widest">EMAIL ADDRESS</label>
+                <input name="email" type="email" placeholder="john@example.com" required className="w-full bg-[#111111] border border-transparent focus:border-white/20 rounded-md p-3 text-white focus:outline-none transition-colors placeholder:text-[#333] text-sm" />
+              </div>
+              <div className="flex-1 flex flex-col">
+                <label className="block font-mono-spaced text-[10px] text-gray-400 mb-1.5 tracking-widest">YOUR MESSAGE</label>
+                <textarea name="message" placeholder="Tell me about your project..." required className="w-full flex-1 bg-[#111111] border border-transparent focus:border-white/20 rounded-md p-3 text-white focus:outline-none transition-colors placeholder:text-[#333] resize-none min-h-[100px] text-sm" />
+              </div>
+              
+              {sendError && <div className="text-red-500 text-xs font-mono-spaced">{sendError}</div>}
+              {sendSuccess && <div className="text-[#10b981] text-xs font-mono-spaced">Message sent successfully!</div>}
+              
+              <button disabled={isSending} type="submit" className="w-full bg-gray-100 text-black py-3 rounded-sm font-mono-spaced text-[12px] font-bold hover:bg-white transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50">
+                <Send className="w-4 h-4" /> {isSending ? 'SENDING...' : 'SEND MESSAGE'}
+              </button>
+            </form>
+            
+            {/* Footer matches screenshot strictly */}
+            <div className="mt-4 text-center pt-2">
+              <p className="font-mono-spaced text-[9px] text-gray-600 tracking-widest">OR REACH ME DIRECTLY AT TANMAYLKGARG@GMAIL.COM</p>
+            </div>
+          </div>
+        </Window>
+      )}
+      
+    </main>
   );
 }

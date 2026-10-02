@@ -21,7 +21,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: `${content.hero.fullName} | Portfolio`,
+  title: `${content.hero.fullName} | Software Engineer`,
   description: content.hero.subtitle,
 };
 
