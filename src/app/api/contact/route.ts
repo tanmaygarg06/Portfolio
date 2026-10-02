@@ -17,7 +17,8 @@ export async function POST(req: Request) {
       },
     });
 
-    const mailOptions = {
+    // 1. Email to You (The Site Owner)
+    const mailOptionsToYou = {
       from: process.env.EMAIL_USER || 'tanmaylkgarg@gmail.com',
       to: 'tanmaylkgarg@gmail.com',
       replyTo: email,
@@ -29,7 +30,22 @@ export async function POST(req: Request) {
              <p>${message.replace(/\n/g, '<br>')}</p>`,
     };
 
-    await transporter.sendMail(mailOptions);
+    // 2. Thank You Auto-Reply Email to the Visitor
+    const mailOptionsToVisitor = {
+      from: process.env.EMAIL_USER || 'tanmaylkgarg@gmail.com',
+      to: email, // sends back to the person who filled out the form
+      subject: `Thank you for reaching out, ${name}!`,
+      text: `Hi ${name},\n\nThank you for checking out my portfolio and getting in touch! I have received your message and will get back to you as soon as possible.\n\nBest regards,\nTanmay Garg\nSoftware Engineer`,
+      html: `<p>Hi ${name},</p>
+             <p>Thank you for checking out my portfolio and getting in touch! I have received your message and will get back to you as soon as possible.</p>
+             <p>Best regards,<br><strong>Tanmay Garg</strong><br>Software Engineer</p>`,
+    };
+
+    // Send both emails simultaneously
+    await Promise.all([
+      transporter.sendMail(mailOptionsToYou),
+      transporter.sendMail(mailOptionsToVisitor)
+    ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
