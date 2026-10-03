@@ -292,6 +292,7 @@ export default function Home() {
                   dark: ['#1e1e1e', '#10b98133', '#10b98166', '#10b98199', '#10b981']
                 }}
                 colorScheme="dark"
+                showTotalCount={false}
               />
             ) : (
               <div className="flex items-center justify-center h-full w-full text-gray-500 animate-pulse">syncing with leetcode...</div>
