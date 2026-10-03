@@ -11,8 +11,9 @@ interface TerminalProps {
 
 export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalProps) {
   const [history, setHistory] = useState<{ type: 'input' | 'output', text: string }[]>([
-    { type: 'output', text: 'TanmayOS Terminal v1.0.0' },
-    { type: 'output', text: 'Type "help" to see available commands.' }
+    { type: 'output', text: 'Welcome to the TanmayOS Interactive Terminal!' },
+    { type: 'output', text: 'I built this feature so you can explore my backend/cloud engineering skills in a native command-line environment.' },
+    { type: 'output', text: 'Type "help" to get started.' }
   ]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);

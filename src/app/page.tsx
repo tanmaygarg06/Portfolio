@@ -193,27 +193,7 @@ export default function Home() {
         <div className="w-1/3 text-right text-gray-500 truncate">{protocol}</div>
       </div>
 
-      {/* Desktop Icons */}
-      <div className="hidden lg:flex absolute top-16 right-6 flex-col gap-6 z-10">
-        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("projects")}>
-          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
-            <Folder className="w-6 h-6 text-[#10b981]" />
-          </div>
-          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Projects</span>
-        </div>
-        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("resume")}>
-          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
-            <FileTextIcon className="w-5 h-5 text-gray-300" />
-          </div>
-          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Resume.pdf</span>
-        </div>
-        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("contact")}>
-          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
-            <Send className="w-5 h-5 text-gray-300" />
-          </div>
-          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Contact</span>
-        </div>
-      </div>
+
 
       <div className="flex flex-col lg:block px-6 pt-24 pb-36 lg:p-0 gap-6 lg:gap-0 w-full lg:w-auto relative min-h-screen">
         {/* Hero Section */}
