@@ -114,7 +114,8 @@ export const content = {
     { degree: "Class 10 – CBSE", school: "Sunder Deep World School", year: "2022" }
   ],
   certifications: [
-    { title: "AWS Certified Solution Architect", issuer: "Amazon Web Services", date: "Scheduled in 2026" },
+    { title: "AWS Certified Solution Architect", issuer: "Amazon Web Services", date: "2026", link: "https://cp.certmetrics.com/amazon/en/public/verify/credential/adc56ad3cb884e2dbcbe10cc9ad9ee62" },
+    { title: "AWS Certified Developer", issuer: "Amazon Web Services", date: "Scheduled in 2026" },
     { title: "AWS Certified Cloud Practitioner", issuer: "Amazon Web Services", date: "2026", link: "https://cp.certmetrics.com/amazon/en/public/verify/credential/13f9e7a1db604feb89ecf8b4699a04c5" },
     { title: "IOT and Industry (4.0)", issuer: "NPTEL", date: "2025" },
     { title: "AWS Academy Graduate Cloud Architecting", issuer: "Amazon Web Services", date: "2025", link: "https://www.credly.com/badges/89d99c22-6691-48a9-8e4d-1bff35b3e0ca/public_url" },
