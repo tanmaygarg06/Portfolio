@@ -18,6 +18,14 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -100,7 +108,7 @@ export default function Home() {
   ) : "LOADING PROTOCOL";
 
   return (
-    <main className="h-screen w-screen overflow-hidden relative selection:bg-[#10b981]/30">
+    <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0">
       {/* Loading Animation */}
       <AnimatePresence>
         {isLoading && (
@@ -154,127 +162,129 @@ export default function Home() {
         <div className="w-1/3 text-right text-gray-500">{protocol}</div>
       </div>
 
-      {/* Hero Section */}
-      <div className="absolute top-20 left-8 md:left-16 max-w-lg z-20 pointer-events-none">
-        <h1 className="title-serif text-6xl md:text-[90px] text-white mb-2 leading-none pointer-events-auto">{content.hero.fullName}</h1>
-        <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em]">{content.hero.subtitle}</div>
-        <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
-          <p className="text-[#9a9a9a] text-lg leading-relaxed">{content.hero.bio}</p>
+      <div className="flex flex-col lg:block px-6 pt-24 pb-36 lg:p-0 gap-6 lg:gap-0 w-full lg:w-auto relative min-h-screen">
+        {/* Hero Section */}
+        <div className="relative lg:absolute lg:top-20 lg:left-8 xl:left-16 max-w-lg z-20 pointer-events-none order-1 mx-auto lg:mx-0 w-full mb-8 lg:mb-0">
+          <h1 className="title-serif text-5xl md:text-[90px] text-white mb-2 leading-none pointer-events-auto">{content.hero.fullName}</h1>
+          <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em]">{content.hero.subtitle}</div>
+          <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
+            <p className="text-[#9a9a9a] text-sm md:text-lg leading-relaxed">{content.hero.bio}</p>
+          </div>
+          <div className="flex items-center gap-6 pointer-events-auto">
+            <button onClick={() => openWindow("contact")} className="bg-white text-black px-6 py-3 rounded-md font-mono-spaced text-[10px] font-bold hover:bg-gray-200 transition-colors flex items-center gap-2">
+              START PROJECT <ArrowUpRight className="w-4 h-4" />
+            </button>
+            <button onClick={() => openWindow("resume")} className="text-gray-400 hover:text-white font-mono-spaced text-[10px] transition-colors">
+              READ RESUME
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-6 pointer-events-auto">
-          <button onClick={() => openWindow("contact")} className="bg-white text-black px-6 py-3 rounded-md font-mono-spaced text-[10px] font-bold hover:bg-gray-200 transition-colors flex items-center gap-2">
-            START PROJECT <ArrowUpRight className="w-4 h-4" />
-          </button>
-          <button onClick={() => openWindow("resume")} className="text-gray-400 hover:text-white font-mono-spaced text-[10px] transition-colors">
-            READ RESUME
-          </button>
-        </div>
-      </div>
 
-      {/* Leadership Widget */}
-      <motion.div drag dragMomentum={false} className="absolute bottom-20 left-8 md:left-12 w-[380px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
-        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
-        <div className="flex justify-between items-center mb-5">
-          <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#10b981]" /> LEADERSHIP
-          </span>
-          <button onClick={() => openWindow("leadership")} className="font-mono-spaced text-[10px] text-white hover:text-gray-300">VIEW ALL ↗</button>
-        </div>
-        <div className="space-y-4">
-          {(content.widgets as any).leadership.slice(0, 1).map((item: any, i: number) => (
-            <div key={i} className="relative pl-4 border-l border-white/10">
-              <div className="absolute w-1.5 h-1.5 bg-white/50 rounded-full -left-[3px] top-1.5" />
-              <h4 className="text-white font-bold text-sm leading-tight mb-1">{item.role}</h4>
-              <div className="font-mono-spaced text-[9px] text-[#10b981] mb-1.5">{item.club} • {item.year}</div>
-              {item.description && <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">{item.description}</p>}
+        {/* Portrait Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-24 lg:left-1/2 lg:-translate-x-1/2 w-full max-w-[300px] mx-auto lg:max-w-none lg:w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl order-2 mb-6 lg:mb-0">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full z-10" />
+          <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
+        </motion.div>
+
+        {/* Status Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-20 lg:right-20 w-full lg:w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-3 mb-6 lg:mb-0 mx-auto">
+          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+            <span className="font-mono-spaced text-[10px] text-gray-500">{content.widgets.status.label}</span>
+          </div>
+          <div className="text-sm text-gray-300">{content.widgets.status.text}</div>
+        </motion.div>
+
+        {/* Quote Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-52 lg:right-16 w-full lg:w-80 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-4 mb-6 lg:mb-0 mx-auto">
+          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-6" />
+          <div className="relative h-[110px] w-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={quoteIndex}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 flex flex-col"
+              >
+                <p className="text-white font-medium text-lg leading-snug mb-auto">"{((content as any).widgets.quotes)[quoteIndex].text}"</p>
+                <div className="text-right mt-2">
+                  <span className="font-mono-spaced text-[10px] text-gray-500">{((content as any).widgets.quotes)[quoteIndex].author}</span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <div className="flex justify-between items-center mt-6">
+            <div className="flex gap-1">
+              {((content as any).widgets.quotes).map((_: any, idx: number) => (
+                <div key={idx} className={`h-1.5 rounded-full transition-all duration-500 ${idx === quoteIndex ? 'w-4 bg-white/80' : 'w-1.5 bg-white/20'}`} />
+              ))}
             </div>
-          ))}
-        </div>
-      </motion.div>
+          </div>
+        </motion.div>
 
-      {/* Portrait Widget */}
-      <motion.div drag dragMomentum={false} className="absolute top-24 left-1/2 -translate-x-1/2 w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 hidden lg:flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl">
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full z-10" />
-        <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
-      </motion.div>
-
-      {/* Status Widget */}
-      <motion.div drag dragMomentum={false} className="absolute top-20 right-20 w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
-        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-          <span className="font-mono-spaced text-[10px] text-gray-500">{content.widgets.status.label}</span>
-        </div>
-        <div className="text-sm text-gray-300">{content.widgets.status.text}</div>
-      </motion.div>
-
-      {/* Quote Widget */}
-      <motion.div drag dragMomentum={false} className="absolute top-52 right-16 w-80 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing hidden xl:block shadow-2xl">
-        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-6" />
-        <div className="relative h-[110px] w-full">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={quoteIndex}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 flex flex-col"
-            >
-              <p className="text-white font-medium text-lg leading-snug mb-auto">"{((content as any).widgets.quotes)[quoteIndex].text}"</p>
-              <div className="text-right mt-2">
-                <span className="font-mono-spaced text-[10px] text-gray-500">{((content as any).widgets.quotes)[quoteIndex].author}</span>
+        {/* Leadership Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-20 lg:left-8 xl:left-12 w-full lg:w-[380px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-5 mb-6 lg:mb-0 mx-auto">
+          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+          <div className="flex justify-between items-center mb-5">
+            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#10b981]" /> LEADERSHIP
+            </span>
+            <button onClick={() => openWindow("leadership")} className="font-mono-spaced text-[10px] text-white hover:text-gray-300">VIEW ALL ↗</button>
+          </div>
+          <div className="space-y-4">
+            {(content.widgets as any).leadership.slice(0, 1).map((item: any, i: number) => (
+              <div key={i} className="relative pl-4 border-l border-white/10">
+                <div className="absolute w-1.5 h-1.5 bg-white/50 rounded-full -left-[3px] top-1.5" />
+                <h4 className="text-white font-bold text-sm leading-tight mb-1">{item.role}</h4>
+                <div className="font-mono-spaced text-[9px] text-[#10b981] mb-1.5">{item.club} • {item.year}</div>
+                {item.description && <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">{item.description}</p>}
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        <div className="flex justify-between items-center mt-6">
-          <div className="flex gap-1">
-            {((content as any).widgets.quotes).map((_: any, idx: number) => (
-              <div key={idx} className={`h-1.5 rounded-full transition-all duration-500 ${idx === quoteIndex ? 'w-4 bg-white/80' : 'w-1.5 bg-white/20'}`} />
             ))}
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
-      {/* Last Played Widget */}
-      <motion.div drag dragMomentum={false} className="absolute bottom-48 left-1/2 -translate-x-1/2 w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing hidden xl:flex gap-4 items-center shadow-2xl">
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
-        <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover mt-2" />
-        <div className="flex-1 mt-2">
-          <div className="font-mono-spaced text-[9px] text-gray-500 mb-1">LAST PLAYED</div>
-          <div className="text-white font-bold text-sm leading-tight">{content.widgets.lastPlayed.track}</div>
-          <div className="text-gray-400 text-[10px] mt-0.5">{content.widgets.lastPlayed.artist}</div>
-        </div>
-        <div className="flex items-end gap-[3px] h-6 opacity-80 mt-2">
-          <motion.div animate={{ height: [4, 16, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-          <motion.div animate={{ height: [10, 20, 10] }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-          <motion.div animate={{ height: [6, 12, 6] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-        </div>
-      </motion.div>
-
-      {/* Codolio Heatmap Widget */}
-      <motion.div drag dragMomentum={false} className="absolute bottom-24 right-8 md:right-12 w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing hidden xl:block">
-        <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
-        <div className="flex justify-between items-center mb-4">
-          <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">CODOLIO HEATMAP</span>
-          <div className="w-2 h-2 rounded-full bg-[#10b981]" />
-        </div>
-        <div className="grid gap-[1px] mb-3 opacity-80" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
-          {Array.from({ length: 364 }).map((_, i) => {
-            const intensity = (i * 23) % 10;
-            return (
-              <div key={i} className={`w-full aspect-square rounded-[1px] ${intensity > 7 ? 'bg-[#10b981]' : intensity > 4 ? 'bg-[#10b981]/60' : intensity > 2 ? 'bg-[#10b981]/30' : 'bg-white/5'}`} />
-            );
-          })}
-        </div>
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-[10px] text-gray-400">432 Problems in last year</span>
-          <div className="flex items-center gap-1 text-[9px] text-gray-500">
-            Less <div className="w-2 h-2 bg-white/5 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/30 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/60 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981] rounded-[1px]" /> More
+        {/* Codolio Heatmap Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:right-8 xl:right-12 w-full lg:w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing order-6 mb-6 lg:mb-0 mx-auto">
+          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+          <div className="flex justify-between items-center mb-4">
+            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">CODOLIO HEATMAP</span>
+            <div className="w-2 h-2 rounded-full bg-[#10b981]" />
           </div>
-        </div>
-      </motion.div>
+          <div className="grid gap-[1px] mb-3 opacity-80" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
+            {Array.from({ length: 364 }).map((_, i) => {
+              const intensity = (i * 23) % 10;
+              return (
+                <div key={i} className={`w-full aspect-square rounded-[1px] ${intensity > 7 ? 'bg-[#10b981]' : intensity > 4 ? 'bg-[#10b981]/60' : intensity > 2 ? 'bg-[#10b981]/30' : 'bg-white/5'}`} />
+              );
+            })}
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <span className="text-[10px] text-gray-400">432 Problems in last year</span>
+            <div className="flex items-center gap-1 text-[9px] text-gray-500">
+              Less <div className="w-2 h-2 bg-white/5 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/30 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/60 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981] rounded-[1px]" /> More
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Last Played Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing flex gap-4 items-center shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
+          <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover mt-2" />
+          <div className="flex-1 mt-2">
+            <div className="font-mono-spaced text-[9px] text-gray-500 mb-1">LAST PLAYED</div>
+            <div className="text-white font-bold text-sm leading-tight">{content.widgets.lastPlayed.track}</div>
+            <div className="text-gray-400 text-[10px] mt-0.5">{content.widgets.lastPlayed.artist}</div>
+          </div>
+          <div className="flex items-end gap-[3px] h-6 opacity-80 mt-2">
+            <motion.div animate={{ height: [4, 16, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <motion.div animate={{ height: [10, 20, 10] }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <motion.div animate={{ height: [6, 12, 6] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+          </div>
+        </motion.div>
+      </div>
 
       {/* Dock */}
       <Dock onOpenWindow={openWindow} activeWindows={activeWindows.map(w => w.id)} />
@@ -430,12 +440,12 @@ export default function Home() {
       )}
       
       {activeWindows.find(w => w.id === "contact") && (
-        <Window id="contact" title="Get In Touch" isOpen={true} onClose={() => closeWindow("contact")} zIndex={activeWindows.find(w => w.id === "contact")!.zIndex} onFocus={() => focusWindow("contact")}>
+        <Window id="contact" title="CONTACT" isOpen={true} onClose={() => closeWindow("contact")} zIndex={activeWindows.find(w => w.id === "contact")!.zIndex} onFocus={() => focusWindow("contact")}>
           <div className="flex flex-col h-full bg-[#0a0a0b] -m-8 p-6 text-white relative min-h-[420px]">
             {/* Header matches screenshot strictly */}
             <div className="mb-4">
-              <h1 className="text-3xl font-bold mb-1">Get In Touch</h1>
-              <p className="font-mono-spaced text-[9px] text-gray-500 tracking-widest">LET'S BUILD SOMETHING GREAT</p>
+              <h1 className="text-3xl font-bold mb-1">Let's Connect</h1>
+              <p className="font-mono-spaced text-[9px] text-gray-500 tracking-widest">GET IN TOUCH & BUILD SOMETHING GREAT</p>
             </div>
             
             {/* Form matches screenshot strictly */}
