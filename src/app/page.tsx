@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Award, Send, Play, Pause } from "lucide-react";
-import GitHubCalendar from 'react-github-calendar';
+import { GitHubCalendar } from 'react-github-calendar';
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
