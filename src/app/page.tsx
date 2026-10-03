@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Award, Send, Play, Pause } from "lucide-react";
-import { GitHubCalendar } from 'react-github-calendar';
+import { ActivityCalendar } from 'react-activity-calendar';
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
@@ -24,6 +24,16 @@ export default function Home() {
 
   // New Features State
   const [isPlaying, setIsPlaying] = useState(false);
+  const [leetcodeData, setLeetcodeData] = useState<{calendar: any[], totalActiveDays: number, streak: number} | null>(null);
+
+  useEffect(() => {
+    fetch('/api/leetcode')
+      .then(res => res.json())
+      .then(data => {
+         if (data.calendar) setLeetcodeData(data);
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -266,23 +276,26 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* GitHub Heatmap Widget */}
+        {/* LeetCode Heatmap Widget */}
         <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:right-8 xl:right-12 w-full lg:w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing order-6 mb-6 lg:mb-0 mx-auto overflow-hidden">
           <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
           <div className="flex justify-between items-center mb-4">
-            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">GITHUB CONTRIBUTIONS</span>
+            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">LEETCODE ACTIVITY {leetcodeData && <span className="text-[#10b981] lowercase">({leetcodeData.totalActiveDays} active days)</span>}</span>
             <div className="w-2 h-2 rounded-full bg-[#10b981]" />
           </div>
-          <div className="opacity-80 flex justify-center text-[10px] font-mono-spaced w-full overflow-hidden">
-            <GitHubCalendar 
-              username="tanmaygarg06" 
-              colorScheme="dark"
-              theme={{
-                light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
-                dark: ['#1e1e1e', '#10b98133', '#10b98166', '#10b98199', '#10b981']
-              }}
-              style={{ width: '100%' }}
-            />
+          <div className="opacity-80 flex justify-center text-[10px] font-mono-spaced w-full overflow-hidden min-h-[120px]">
+            {leetcodeData ? (
+              <ActivityCalendar 
+                data={leetcodeData.calendar}
+                theme={{
+                  light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                  dark: ['#1e1e1e', '#10b98133', '#10b98166', '#10b98199', '#10b981']
+                }}
+                colorScheme="dark"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full w-full text-gray-500 animate-pulse">syncing with leetcode...</div>
+            )}
           </div>
         </motion.div>
 
