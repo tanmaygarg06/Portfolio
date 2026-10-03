@@ -1,7 +1,7 @@
 "use client";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import { Briefcase, Terminal, Cpu, Award, FileText, Mail } from "lucide-react";
+import { Briefcase, Terminal as TerminalIcon, Cpu, Award, FileText, Mail, Monitor } from "lucide-react";
 
 const GithubIcon = (props: any) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -36,7 +36,8 @@ export default function Dock({ onOpenWindow, activeWindows }: DockProps) {
 
   const items = [
     { id: "experience", label: "EXPERIENCE", icon: Briefcase, type: "window" },
-    { id: "projects", label: "PROJECTS", icon: Terminal, type: "window" },
+    { id: "projects", label: "PROJECTS", icon: Monitor, type: "window" },
+    { id: "terminal", label: "TERMINAL", icon: TerminalIcon, type: "window" },
     { id: "techstack", label: "TECH STACK", icon: Cpu, type: "window" },
     { id: "certifications", label: "CERTIFICATIONS", icon: Award, type: "window" },
     { id: "resume", label: "RESUME", icon: FileText, type: "window" },

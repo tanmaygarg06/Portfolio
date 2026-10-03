@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Award, Send } from "lucide-react";
+import { ArrowUpRight, Award, Send, Folder, FileText as FileTextIcon, Play, Pause } from "lucide-react";
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
+import Terminal from "@/components/Terminal";
 import { content } from "@/data/content";
 
 export default function Home() {
@@ -20,11 +21,25 @@ export default function Home() {
   const [sendError, setSendError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
+  // New Features State
+  const [githubStatus, setGithubStatus] = useState("fetching latest push...");
+  const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    fetch("https://api.github.com/users/tanmaygarg06/events/public")
+      .then(res => res.json())
+      .then(data => {
+         const push = data.find((e: any) => e.type === "PushEvent");
+         if (push) setGithubStatus(`LATEST PUSH: ${push.repo.name.split('/')[1]} • ${formatDistanceToNow(new Date(push.created_at)).toUpperCase()} AGO`);
+         else setGithubStatus("ALL SYSTEMS ONLINE");
+      }).catch(() => setGithubStatus("ALL SYSTEMS ONLINE"));
   }, []);
 
   useEffect(() => {
@@ -107,10 +122,21 @@ export default function Home() {
     : "LATE NIGHT PROTOCOL"
   ) : "LOADING PROTOCOL";
 
+  const togglePlay = () => {
+    const audio = document.getElementById('bg-audio') as HTMLAudioElement;
+    if (!audio) return;
+    if (isPlaying) { audio.pause(); setIsPlaying(false); }
+    else { audio.play(); setIsPlaying(true); }
+  };
+
   return (
     <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0 bg-[#0a0a0b]">
+      {/* Audio Element */}
+      <audio id="bg-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop />
+      
       {/* Persistent Subtle Grid Background */}
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
+      
       {/* Loading Animation */}
       <AnimatePresence>
         {isLoading && (
@@ -159,9 +185,34 @@ export default function Home() {
 
       {/* Top Bar */}
       <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 bg-[#0a0a0b]/80 backdrop-blur-md z-30 flex items-center justify-between px-4 text-[10px] font-mono-spaced text-gray-400">
-        <div className="w-1/3">{content.hero.firstName}</div>
-        <div className="w-1/3 text-center text-white">{time ? format(time, "EEEE, MMMM d, yyyy").toUpperCase() : ""}</div>
-        <div className="w-1/3 text-right text-gray-500">{protocol}</div>
+        <div className="w-1/3 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse" />
+          <span className="truncate">{githubStatus}</span>
+        </div>
+        <div className="w-1/3 text-center text-white truncate">{time ? format(time, "EEEE, MMMM d, yyyy").toUpperCase() : ""}</div>
+        <div className="w-1/3 text-right text-gray-500 truncate">{protocol}</div>
+      </div>
+
+      {/* Desktop Icons */}
+      <div className="hidden lg:flex absolute top-16 right-6 flex-col gap-6 z-10">
+        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("projects")}>
+          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
+            <Folder className="w-6 h-6 text-[#10b981]" />
+          </div>
+          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Projects</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("resume")}>
+          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
+            <FileTextIcon className="w-5 h-5 text-gray-300" />
+          </div>
+          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Resume.pdf</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 cursor-pointer group" onDoubleClick={() => openWindow("contact")}>
+          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-xl">
+            <Send className="w-5 h-5 text-gray-300" />
+          </div>
+          <span className="text-[10px] font-mono-spaced text-gray-400 group-hover:text-white bg-black/50 px-1 rounded shadow-md">Contact</span>
+        </div>
       </div>
 
       <div className="flex flex-col lg:block px-6 pt-24 pb-36 lg:p-0 gap-6 lg:gap-0 w-full lg:w-auto relative min-h-screen">
@@ -274,16 +325,26 @@ export default function Home() {
         {/* Last Played Widget */}
         <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing flex gap-4 items-center shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
-          <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover mt-2" />
+          
+          <div className="relative group cursor-pointer mt-2" onClick={togglePlay} onPointerDown={(e) => e.stopPropagation()}>
+            <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover group-hover:opacity-40 transition-opacity" />
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              {isPlaying ? <Pause className="w-6 h-6 text-white drop-shadow-md" /> : <Play className="w-6 h-6 text-white drop-shadow-md" />}
+            </div>
+          </div>
+          
           <div className="flex-1 mt-2">
-            <div className="font-mono-spaced text-[9px] text-gray-500 mb-1">LAST PLAYED</div>
+            <div className="font-mono-spaced text-[9px] text-gray-500 mb-1 flex items-center gap-1">
+              {isPlaying && <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse" />} LAST PLAYED
+            </div>
             <div className="text-white font-bold text-sm leading-tight">{content.widgets.lastPlayed.track}</div>
             <div className="text-gray-400 text-[10px] mt-0.5">{content.widgets.lastPlayed.artist}</div>
           </div>
+          
           <div className="flex items-end gap-[3px] h-6 opacity-80 mt-2">
-            <motion.div animate={{ height: [4, 16, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-            <motion.div animate={{ height: [10, 20, 10] }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-            <motion.div animate={{ height: [6, 12, 6] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <motion.div animate={{ height: isPlaying ? [4, 16, 4] : 4 }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <motion.div animate={{ height: isPlaying ? [10, 20, 10] : 10 }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <motion.div animate={{ height: isPlaying ? [6, 12, 6] : 6 }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
           </div>
         </motion.div>
       </div>
@@ -480,6 +541,13 @@ export default function Home() {
           </div>
         </Window>
       )}
+      
+      <Terminal
+        isOpen={!!activeWindows.find(w => w.id === "terminal")}
+        onClose={() => closeWindow("terminal")}
+        zIndex={activeWindows.find(w => w.id === "terminal")?.zIndex || 0}
+        onFocus={() => focusWindow("terminal")}
+      />
       
     </main>
   );
