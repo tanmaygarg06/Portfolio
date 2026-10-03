@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Award, Send, Folder, FileText as FileTextIcon, Play, Pause } from "lucide-react";
+import { ArrowUpRight, Award, Send, Play, Pause } from "lucide-react";
+import GitHubCalendar from 'react-github-calendar';
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
@@ -22,7 +23,6 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
 
   // New Features State
-  const [githubStatus, setGithubStatus] = useState("fetching latest push...");
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
@@ -30,16 +30,6 @@ export default function Home() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    fetch("https://api.github.com/users/tanmaygarg06/events/public")
-      .then(res => res.json())
-      .then(data => {
-         const push = data.find((e: any) => e.type === "PushEvent");
-         if (push) setGithubStatus(`LATEST PUSH: ${push.repo.name.split('/')[1]} • ${formatDistanceToNow(new Date(push.created_at)).toUpperCase()} AGO`);
-         else setGithubStatus("ALL SYSTEMS ONLINE");
-      }).catch(() => setGithubStatus("ALL SYSTEMS ONLINE"));
   }, []);
 
   useEffect(() => {
@@ -185,10 +175,7 @@ export default function Home() {
 
       {/* Top Bar */}
       <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 bg-[#0a0a0b]/80 backdrop-blur-md z-30 flex items-center justify-between px-4 text-[10px] font-mono-spaced text-gray-400">
-        <div className="w-1/3 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse" />
-          <span className="truncate">{githubStatus}</span>
-        </div>
+        <div className="w-1/3 truncate">{content.hero.firstName}</div>
         <div className="w-1/3 text-center text-white truncate">{time ? format(time, "EEEE, MMMM d, yyyy").toUpperCase() : ""}</div>
         <div className="w-1/3 text-right text-gray-500 truncate">{protocol}</div>
       </div>
@@ -279,26 +266,23 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Codolio Heatmap Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:right-8 xl:right-12 w-full lg:w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing order-6 mb-6 lg:mb-0 mx-auto">
+        {/* GitHub Heatmap Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:right-8 xl:right-12 w-full lg:w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing order-6 mb-6 lg:mb-0 mx-auto overflow-hidden">
           <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
           <div className="flex justify-between items-center mb-4">
-            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">CODOLIO HEATMAP</span>
+            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest">GITHUB CONTRIBUTIONS</span>
             <div className="w-2 h-2 rounded-full bg-[#10b981]" />
           </div>
-          <div className="grid gap-[1px] mb-3 opacity-80" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
-            {Array.from({ length: 364 }).map((_, i) => {
-              const intensity = (i * 23) % 10;
-              return (
-                <div key={i} className={`w-full aspect-square rounded-[1px] ${intensity > 7 ? 'bg-[#10b981]' : intensity > 4 ? 'bg-[#10b981]/60' : intensity > 2 ? 'bg-[#10b981]/30' : 'bg-white/5'}`} />
-              );
-            })}
-          </div>
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-[10px] text-gray-400">432 Problems in last year</span>
-            <div className="flex items-center gap-1 text-[9px] text-gray-500">
-              Less <div className="w-2 h-2 bg-white/5 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/30 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981]/60 rounded-[1px]" /><div className="w-2 h-2 bg-[#10b981] rounded-[1px]" /> More
-            </div>
+          <div className="opacity-80 flex justify-center text-[10px] font-mono-spaced w-full overflow-hidden">
+            <GitHubCalendar 
+              username="tanmaygarg06" 
+              colorScheme="dark"
+              theme={{
+                light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                dark: ['#1e1e1e', '#10b98133', '#10b98166', '#10b98199', '#10b981']
+              }}
+              style={{ width: '100%' }}
+            />
           </div>
         </motion.div>
 

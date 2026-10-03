@@ -19,6 +19,7 @@
     "pdf2json": "^4.1.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-github-calendar": "^5.0.9",
     "simple-icons": "^16.33.0",
     "tailwind-merge": "^3.7.0"
   },
