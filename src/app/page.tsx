@@ -108,7 +108,9 @@ export default function Home() {
   ) : "LOADING PROTOCOL";
 
   return (
-    <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0">
+    <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0 bg-[#0a0a0b]">
+      {/* Persistent Subtle Grid Background */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
       {/* Loading Animation */}
       <AnimatePresence>
         {isLoading && (
