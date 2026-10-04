@@ -105,7 +105,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
       let output = "";
       switch (lowerCmd) {
         case 'help':
-          output = "Available commands:\n  whoami\n  skills\n  projects\n  education\n  experience\n  contact\n  theme\n  clear\n  close\n  sudo hire tanmay";
+          output = "Available commands:\n  whoami\n  skills\n  projects\n  education\n  experience\n  contact\n  theme\n  clear\n  close\n  hire tanmay";
           break;
         case 'whoami':
           output = "Tanmay Garg - Software Engineer & Cloud Builder.\nPassionate about scalable backend systems, robust cloud solutions, and competitive programming.";
@@ -120,7 +120,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
           output = "ABES Engineering College, Ghaziabad\nB.Tech - Computer Science and Engineering (2024 - 2028)\n\nSunder Deep World School\nClass 12 - CBSE (2024)\nClass 10 - CBSE (2022)";
           break;
         case 'experience':
-          output = "CodeChef Club | Member (Competitive Dept) | 2025\n- Organized weekly peer-learning sessions\n- Mentored junior students\n\nISTE VIT | Backend Developer | 2024\n- Directed the competitive programming division\n- Organized 'Clash of Coders' college CP contest";
+          output = "IBM | Project-Based Internship | '26 - '26 (Remote)\n- Architected a highly secure cloud file storage system utilizing AWS S3 and IAM.\n- Implemented JWT-based authentication with strict least-privilege policies.\n- Streamlined CI/CD pipeline using GitHub Actions.";
           break;
         case 'contact':
           output = "Email    : tanmaylkgarg@gmail.com\nLinkedIn : linkedin.com/in/garg-tanmay\nGitHub   : github.com/tanmaygarg06\nCodolio  : codolio.com/profile/tanmay_garg06";
@@ -129,6 +129,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
           output = "Select a theme for the terminal:\n[1] Dark Theme\n[2] Light Theme\n\nType 1 or 2:";
           setProcessState({ type: 'theme', step: 1 });
           break;
+        case 'hire tanmay':
         case 'sudo hire tanmay':
           output = "Currently open for internship. What role are you hiring for?";
           setProcessState({ type: 'hire', step: 1, role: '', salary: '', company: '', email: '' });
