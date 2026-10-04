@@ -23,7 +23,8 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
 
   // New Features State
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [apiResponse, setApiResponse] = useState<string>("");
+  const [isApiLoading, setIsApiLoading] = useState(false);
   const [leetcodeData, setLeetcodeData] = useState<{calendar: any[], totalActiveDays: number, streak: number} | null>(null);
 
   useEffect(() => {
@@ -122,17 +123,25 @@ export default function Home() {
     : "LATE NIGHT PROTOCOL"
   ) : "LOADING PROTOCOL";
 
-  const togglePlay = () => {
-    const audio = document.getElementById('bg-audio') as HTMLAudioElement;
-    if (!audio) return;
-    if (isPlaying) { audio.pause(); setIsPlaying(false); }
-    else { audio.play(); setIsPlaying(true); }
+  const handleApiTest = () => {
+    setIsApiLoading(true);
+    setApiResponse("");
+    setTimeout(() => {
+      setApiResponse(JSON.stringify({
+        status: 200,
+        data: {
+          engineer: "Tanmay Garg",
+          availability: "Open to Internships",
+          skills: ["AWS", "Node", "Docker", "Python", "Kubernetes"],
+          hireable: true
+        }
+      }, null, 2));
+      setIsApiLoading(false);
+    }, 800);
   };
 
   return (
     <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0 bg-[#0a0a0b]">
-      {/* Audio Element */}
-      <audio id="bg-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop />
       
       {/* Persistent Subtle Grid Background */}
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
@@ -303,29 +312,39 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Last Played Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing flex gap-4 items-center shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
+        {/* Live API Playground Widget */}
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[340px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
           
-          <div className="relative group cursor-pointer mt-2" onClick={togglePlay} onPointerDown={(e) => e.stopPropagation()}>
-            <img src={content.widgets.lastPlayed.albumArt} alt="Album Art" className="w-16 h-16 rounded-md object-cover group-hover:opacity-40 transition-opacity" />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              {isPlaying ? <Pause className="w-6 h-6 text-white drop-shadow-md" /> : <Play className="w-6 h-6 text-white drop-shadow-md" />}
+          <div className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center justify-between mb-3 mt-1">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+              LIVE SYSTEM API
             </div>
           </div>
           
-          <div className="flex-1 mt-2">
-            <div className="font-mono-spaced text-[9px] text-gray-500 mb-1 flex items-center gap-1">
-              {isPlaying && <div className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse" />} LAST PLAYED
+          <div className="bg-[#0a0a0b] border border-white/5 rounded-lg overflow-hidden flex flex-col cursor-text" onPointerDown={(e) => e.stopPropagation()}>
+            <div className="flex bg-[#1a1a1c] border-b border-white/10 px-2 py-1.5 items-center justify-between">
+               <div className="flex items-center gap-2 text-[10px] font-mono-spaced">
+                  <span className="text-[#10b981] font-bold">GET</span>
+                  <span className="text-gray-400">/api/v1/engineer/status</span>
+               </div>
+               <button onClick={handleApiTest} disabled={isApiLoading} className="bg-white/10 hover:bg-white/20 transition-colors text-white text-[9px] font-mono-spaced px-2 py-1 rounded disabled:opacity-50 cursor-pointer">
+                 {isApiLoading ? 'SENDING...' : 'SEND'}
+               </button>
             </div>
-            <div className="text-white font-bold text-sm leading-tight">{content.widgets.lastPlayed.track}</div>
-            <div className="text-gray-400 text-[10px] mt-0.5">{content.widgets.lastPlayed.artist}</div>
-          </div>
-          
-          <div className="flex items-end gap-[3px] h-6 opacity-80 mt-2">
-            <motion.div animate={{ height: isPlaying ? [4, 16, 4] : 4 }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-            <motion.div animate={{ height: isPlaying ? [10, 20, 10] : 10 }} transition={{ repeat: Infinity, duration: 1.2 }} className="w-1 bg-[#10b981] rounded-t-sm" />
-            <motion.div animate={{ height: isPlaying ? [6, 12, 6] : 6 }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-t-sm" />
+            <div className="p-3 h-[110px] overflow-y-auto text-[10px] font-mono-spaced text-gray-300">
+              {isApiLoading ? (
+                <div className="flex items-center justify-center h-full opacity-50 animate-pulse">awaiting response...</div>
+              ) : apiResponse ? (
+                <pre className="text-[#10b981] leading-relaxed">{apiResponse}</pre>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full opacity-40 text-gray-500 gap-1">
+                  <div>// Endpoint ready</div>
+                  <div>Hit SEND to fetch data</div>
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
