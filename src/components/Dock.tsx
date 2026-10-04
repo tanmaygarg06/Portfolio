@@ -93,20 +93,35 @@ function DockIcon({ item, mouseX, isOpen, onClick }: any) {
   return (
     <div className="relative flex flex-col items-center justify-end h-full">
       {hovered && (
-        <div className="absolute -top-12 px-3 py-1.5 bg-[#1a1a1c] border border-white/10 rounded-md text-[10px] text-gray-200 font-mono-spaced whitespace-nowrap">
+        <div className="absolute -top-12 px-3 py-1.5 bg-[#1a1a1c] border border-white/10 rounded-md text-[10px] text-gray-200 font-mono-spaced whitespace-nowrap z-50">
           {item.label}
         </div>
       )}
-      <motion.button
-        ref={ref}
-        style={{ width, height: width }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={onClick}
-        className="relative flex items-center justify-center rounded-xl shrink-0"
-      >
-        <item.icon className="w-1/2 h-1/2 text-gray-300" />
-      </motion.button>
+      {item.type === 'link' ? (
+        <motion.a
+          ref={ref as any}
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ width, height: width }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className="relative flex items-center justify-center rounded-xl shrink-0 cursor-pointer"
+        >
+          <item.icon className="w-1/2 h-1/2 text-gray-300" />
+        </motion.a>
+      ) : (
+        <motion.button
+          ref={ref as any}
+          style={{ width, height: width }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onClick={onClick}
+          className="relative flex items-center justify-center rounded-xl shrink-0"
+        >
+          <item.icon className="w-1/2 h-1/2 text-gray-300" />
+        </motion.button>
+      )}
       {/* Indicator for open window */}
       <div className={`mt-1.5 w-1 h-1 rounded-full bg-white/80 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity`} />
     </div>
