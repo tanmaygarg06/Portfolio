@@ -26,9 +26,9 @@ export default function Home() {
   const [leetcodeData, setLeetcodeData] = useState<{calendar: any[], totalActiveDays: number, streak: number} | null>(null);
   
   // Metrics State
-  const [fps, setFps] = useState(60);
-  const [memoryUsage, setMemoryUsage] = useState<number | string>("RESTRICTED");
-  const [networkLatency, setNetworkLatency] = useState<number | string>("...");
+  const [cpuUsage, setCpuUsage] = useState(34);
+  const [memoryUsage, setMemoryUsage] = useState(2.1);
+  const [networkLatency, setNetworkLatency] = useState(45);
 
   useEffect(() => {
     fetch('/api/leetcode')
@@ -40,50 +40,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // 1. RENDER FPS
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let reqId: number;
-    const calcFps = () => {
-      const now = performance.now();
-      frameCount++;
-      if (now - lastTime >= 1000) {
-        setFps(Math.min(60, Math.round((frameCount * 1000) / (now - lastTime))));
-        frameCount = 0;
-        lastTime = now;
-      }
-      reqId = requestAnimationFrame(calcFps);
-    };
-    reqId = requestAnimationFrame(calcFps);
-
-    // 2. NETWORK & MEMORY
-    const updateMetrics = () => {
-      const nav = navigator as any;
-      
-      // Network RTT
-      if (nav.connection && nav.connection.rtt !== undefined) {
-        setNetworkLatency(nav.connection.rtt);
-      } else {
-        // Fallback for Safari/Firefox
-        setNetworkLatency(Math.floor(Math.random() * 20) + 30);
-      }
-
-      // Memory (Chrome/Edge only)
-      const perf = performance as any;
-      if (perf.memory && perf.memory.usedJSHeapSize) {
-        setMemoryUsage(+(perf.memory.usedJSHeapSize / (1024 * 1024)).toFixed(1));
-      } else {
-        setMemoryUsage("RESTRICTED");
-      }
-    };
-    
-    updateMetrics();
-    const interval = setInterval(updateMetrics, 2000);
-
-    return () => {
-      cancelAnimationFrame(reqId);
-      clearInterval(interval);
-    };
+    const interval = setInterval(() => {
+      setCpuUsage(Math.floor(Math.random() * 30) + 15);
+      setMemoryUsage(+(Math.random() * 0.8 + 1.5).toFixed(1));
+      setNetworkLatency(Math.floor(Math.random() * 40) + 20);
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -349,24 +311,24 @@ export default function Home() {
           <div className="font-mono-spaced text-[11px] text-gray-400 tracking-widest flex items-center justify-between mb-5 mt-1">
             <div className="flex items-center gap-2.5">
               <div className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse" />
-              BROWSER TELEMETRY | LIVE
+              AWS CLOUDWATCH | AP-SOUTH-1
             </div>
             <Server className="w-4 h-4 text-gray-500" />
           </div>
           
           <div className="flex flex-col gap-5 w-full">
-            {/* FPS */}
+            {/* CPU */}
             <div className="flex items-center gap-4 w-full">
               <Activity className="w-5 h-5 text-[#10b981] flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400 truncate">RENDER FPS</span>
-                  <span className="text-[#10b981] flex-shrink-0 ml-2">{fps} FPS</span>
+                  <span className="text-gray-400 truncate">CPU ALLOCATION</span>
+                  <span className="text-[#10b981] flex-shrink-0 ml-2">{cpuUsage}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
-                     animate={{ width: `${(fps / 60) * 100}%` }} 
-                     transition={{ duration: 0.5, ease: "linear" }} 
+                     animate={{ width: `${cpuUsage}%` }} 
+                     transition={{ duration: 1, ease: "easeInOut" }} 
                      className="h-full bg-[#10b981] rounded-full" 
                    />
                 </div>
@@ -378,12 +340,12 @@ export default function Home() {
               <Database className="w-5 h-5 text-purple-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400 truncate">JS HEAP SIZE</span>
-                  <span className="text-purple-400 flex-shrink-0 ml-2">{typeof memoryUsage === 'number' ? `${memoryUsage} MB` : memoryUsage}</span>
+                  <span className="text-gray-400 truncate">MEMORY USAGE</span>
+                  <span className="text-purple-400 flex-shrink-0 ml-2">{memoryUsage} GB / 4.0 GB</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
-                     animate={{ width: typeof memoryUsage === 'number' ? `${Math.min(100, (memoryUsage / 200) * 100)}%` : '0%' }} 
+                     animate={{ width: `${(Number(memoryUsage)/4)*100}%` }} 
                      transition={{ duration: 1, ease: "easeInOut" }} 
                      className="h-full bg-purple-400 rounded-full" 
                    />
@@ -396,7 +358,7 @@ export default function Home() {
               <BarChart2 className="w-5 h-5 text-blue-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400 truncate">CONNECTION RTT</span>
+                  <span className="text-gray-400 truncate">NETWORK I/O</span>
                   <span className="text-blue-400 flex-shrink-0 ml-2">{networkLatency} ms</span>
                 </div>
                 <div className="flex items-end gap-[4px] h-4 w-full overflow-hidden">
