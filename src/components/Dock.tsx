@@ -49,7 +49,7 @@ export default function Dock({ onOpenWindow, activeWindows }: DockProps) {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden sm:flex">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] hidden sm:flex">
       <motion.div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
@@ -93,7 +93,7 @@ function DockIcon({ item, mouseX, isOpen, onClick }: any) {
   return (
     <div className="relative flex flex-col items-center justify-end h-full">
       {hovered && (
-        <div className="absolute -top-12 px-3 py-1.5 bg-[#1a1a1c] border border-white/10 rounded-md text-[10px] text-gray-200 font-mono-spaced whitespace-nowrap z-50">
+        <div className="absolute -top-12 px-3 py-1.5 bg-[#1a1a1c] border border-white/10 rounded-md text-[10px] text-gray-200 font-mono-spaced whitespace-nowrap z-[110]">
           {item.label}
         </div>
       )}
