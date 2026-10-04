@@ -196,7 +196,10 @@ export default function Home() {
         {/* Hero Section */}
         <div className="relative lg:absolute lg:top-20 lg:left-8 xl:left-16 max-w-lg z-20 pointer-events-none order-1 mx-auto lg:mx-0 w-full mb-8 lg:mb-0">
           <h1 className="title-serif text-5xl md:text-[90px] text-white mb-2 leading-none pointer-events-auto">{content.hero.fullName}</h1>
-          <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em]">{content.hero.subtitle}</div>
+          <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em] flex flex-col gap-1.5">
+            <span>{content.hero.subtitle}</span>
+            <span className="text-[#10b981]">BUILDING SERVERLESS ARCHITECTURE</span>
+          </div>
           <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
             <p className="text-[#9a9a9a] text-sm md:text-lg leading-relaxed">{content.hero.bio}</p>
           </div>

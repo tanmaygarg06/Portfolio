@@ -34,15 +34,59 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history]);
 
+  const [processState, setProcessState] = useState<{ step: number; role: string; salary: string; company: string; email: string } | null>(null);
+
   const handleCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const cmd = input.trim().toLowerCase();
-      const newHistory = [...history, { type: 'input', text: `visitor@tanmay-os:~$ ${input}` } as const];
+      const cmd = input.trim();
+      const lowerCmd = cmd.toLowerCase();
+      const newHistory = [...history, { type: 'input', text: `visitor@tanmay-os:~$ ${cmd}` } as const];
       
+      if (processState) {
+        let output = "";
+        const state = { ...processState };
+        
+        if (state.step === 1) {
+          state.role = cmd;
+          state.step = 2;
+          output = "What is the proposed salary/stipend?";
+          setProcessState(state);
+        } else if (state.step === 2) {
+          state.salary = cmd;
+          state.step = 3;
+          output = "What is the name of your company / hiring manager?";
+          setProcessState(state);
+        } else if (state.step === 3) {
+          state.company = cmd;
+          state.step = 4;
+          output = "What is your email address so I can get back to you?";
+          setProcessState(state);
+        } else if (state.step === 4) {
+          state.email = cmd;
+          output = "Thank you for showing interest in hiring me! Once I read all requirements, I will respond to you promptly.";
+          setProcessState(null);
+          
+          fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: state.company + ' (via Terminal)',
+              email: state.email,
+              message: `[TERMINAL HIRE REQUEST]\nRole: ${state.role}\nSalary/Stipend: ${state.salary}`
+            })
+          }).catch(console.error);
+        }
+
+        newHistory.push({ type: 'output', text: output });
+        setHistory(newHistory);
+        setInput("");
+        return;
+      }
+
       let output = "";
-      switch (cmd) {
+      switch (lowerCmd) {
         case 'help':
-          output = "Available commands:\n  whoami\n  skills\n  projects\n  education\n  contact\n  matrix\n  theme\n  clear\n  sudo <command>";
+          output = "Available commands:\n  whoami\n  skills\n  projects\n  education\n  contact\n  matrix\n  theme\n  clear\n  sudo hire tanmay";
           break;
         case 'whoami':
           output = "Tanmay Garg - Software Engineer & Cloud Builder.\nPassionate about scalable backend systems, robust cloud solutions, and competitive programming.";
@@ -66,7 +110,8 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
           output = "Error: Dark mode is the only mode for real developers.";
           break;
         case 'sudo hire tanmay':
-          output = "Access Granted! Redirecting to contact protocol... (Check your Get In Touch window!)";
+          output = "Currently open for internship. What role are you hiring for?";
+          setProcessState({ step: 1, role: '', salary: '', company: '', email: '' });
           break;
         case 'sudo rm -rf /':
           output = "Nice try. I keep my backups in multiple availability zones on AWS S3.";
@@ -78,7 +123,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
         case '':
           break;
         default:
-          if (cmd.startsWith('sudo ')) {
+          if (lowerCmd.startsWith('sudo ')) {
             output = `visitor is not in the sudoers file. This incident will be reported.`;
           } else {
             output = `command not found: ${cmd}. Type "help" for a list of available commands.`;
