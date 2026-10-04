@@ -98,7 +98,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
           output = "[1] Sync-Board: Real-time collaborative whiteboard using WebSockets.\n[2] Backend API: Scalable REST API deployed on AWS ECS with auto-scaling.\n[3] Portfolio OS: This very operating system simulation you are using right now!";
           break;
         case 'education':
-          output = "Vellore Institute of Technology (VIT)\nB.Tech in Computer Science and Engineering\nExpected Graduation: 2026\nClubs: Backend Developer @ ISTE VIT";
+          output = "ABES Engineering College, Ghaziabad\nB.Tech - Computer Science and Engineering (2024 - 2028)\n\nSunder Deep World School\nClass 12 - CBSE (2024)\nClass 10 - CBSE (2022)";
           break;
         case 'contact':
           output = "Email    : tanmaylkgarg@gmail.com\nLinkedIn : linkedin.com/in/garg-tanmay\nGitHub   : github.com/tanmaygarg06\nCodolio  : codolio.com/profile/tanmay_garg06";
@@ -107,7 +107,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
           output = "Wake up, Neo...\nThe matrix has you...\nFollow the white rabbit.";
           break;
         case 'theme':
-          output = "Error: Dark mode is the only mode for real developers.";
+          output = "Available themes:\n[1] Dark Theme (Current)\n[2] Light Theme\n\nNote: The OS is currently locked to Dark Theme to ensure the best visual experience and maintain consistent aesthetic standards.";
           break;
         case 'sudo hire tanmay':
           output = "Currently open for internship. What role are you hiring for?";
