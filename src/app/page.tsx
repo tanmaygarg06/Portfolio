@@ -423,13 +423,14 @@ export default function Home() {
       {activeWindows.find(w => w.id === "techstack") && (
         <Window id="techstack" title="TECH STACK" isOpen={true} onClose={() => closeWindow("techstack")} zIndex={activeWindows.find(w => w.id === "techstack")!.zIndex} onFocus={() => focusWindow("techstack")}>
           <div className="relative">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
-              <span className="text-8xl font-black tracking-tighter">CLOUD</span>
-            </div>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 relative z-10">
               {content.skills.map((skill, i) => (
                 <div key={i} className="flex flex-col items-center justify-center p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all hover:-translate-y-1">
-                  <img src={skill.logo} alt={skill.name} className="w-8 h-8 mb-3 opacity-90" />
+                  <img 
+                    src={skill.logo} 
+                    alt={skill.name} 
+                    className={`w-8 h-8 mb-3 opacity-90 ${skill.name === 'AWS' || skill.name === 'Next.js' ? 'bg-gray-200 p-1 rounded-md' : ''}`} 
+                  />
                   <span className="font-mono-spaced text-[9px] text-gray-400 text-center">{skill.name}</span>
                 </div>
               ))}
