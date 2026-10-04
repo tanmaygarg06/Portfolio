@@ -354,14 +354,14 @@ export default function Home() {
             <Server className="w-4 h-4 text-gray-500" />
           </div>
           
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 w-full">
             {/* FPS */}
-            <div className="flex items-center gap-4">
-              <Activity className="w-5 h-5 text-[#10b981]" />
-              <div className="flex-1">
+            <div className="flex items-center gap-4 w-full">
+              <Activity className="w-5 h-5 text-[#10b981] flex-shrink-0" />
+              <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400">RENDER FPS</span>
-                  <span className="text-[#10b981]">{fps} FPS</span>
+                  <span className="text-gray-400 truncate">RENDER FPS</span>
+                  <span className="text-[#10b981] flex-shrink-0 ml-2">{fps} FPS</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
@@ -374,12 +374,12 @@ export default function Home() {
             </div>
 
             {/* RAM */}
-            <div className="flex items-center gap-4">
-              <Database className="w-5 h-5 text-purple-400" />
-              <div className="flex-1">
+            <div className="flex items-center gap-4 w-full">
+              <Database className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400">JS HEAP SIZE</span>
-                  <span className="text-purple-400">{typeof memoryUsage === 'number' ? `${memoryUsage} MB` : memoryUsage}</span>
+                  <span className="text-gray-400 truncate">JS HEAP SIZE</span>
+                  <span className="text-purple-400 flex-shrink-0 ml-2">{typeof memoryUsage === 'number' ? `${memoryUsage} MB` : memoryUsage}</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
@@ -392,12 +392,12 @@ export default function Home() {
             </div>
 
             {/* NET */}
-            <div className="flex items-center gap-4">
-              <BarChart2 className="w-5 h-5 text-blue-400" />
-              <div className="flex-1">
+            <div className="flex items-center gap-4 w-full">
+              <BarChart2 className="w-5 h-5 text-blue-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400">CONNECTION RTT</span>
-                  <span className="text-blue-400">{networkLatency} ms</span>
+                  <span className="text-gray-400 truncate">CONNECTION RTT</span>
+                  <span className="text-blue-400 flex-shrink-0 ml-2">{networkLatency} ms</span>
                 </div>
                 <div className="flex items-end gap-[4px] h-4 w-full overflow-hidden">
                    {Array.from({ length: 50 }).map((_, i) => (
