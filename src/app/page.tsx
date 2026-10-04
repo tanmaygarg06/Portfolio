@@ -1,15 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls, useAnimation } from "framer-motion";
 import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2 } from "lucide-react";
 import { ActivityCalendar } from 'react-activity-calendar';
+import KineticGrid from "@/components/ui/kinetic-grid";
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
 import { content } from "@/data/content";
 
 export default function Home() {
+
+  const portraitDrag = useDragControls();
+  const statusDrag = useDragControls();
+  const quoteDrag = useDragControls();
+  const leadershipDrag = useDragControls();
+  const leetcodeDrag = useDragControls();
+  const serverDrag = useDragControls();
+  const resetControls = useAnimation();
+  
+  const handleReset = () => {
+    resetControls.start({ x: 0, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } });
+  };
+
   const [time, setTime] = useState<Date | null>(null);
   const [activeWindows, setActiveWindows] = useState<{id: string, zIndex: number}[]>([]);
   const [maxZIndex, setMaxZIndex] = useState(50);
@@ -49,7 +63,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1280);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -133,10 +147,8 @@ export default function Home() {
   ) : "LOADING PROTOCOL";
 
   return (
-    <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0 bg-[#0a0a0b]">
-      
-      {/* Persistent Subtle Grid Background */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
+    <main className="min-h-screen xl:h-screen w-screen overflow-x-hidden overflow-y-auto xl:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 xl:pb-0 bg-[#0a0a0b]">
+      <KineticGrid globalColor="default">
       
       {/* Loading Animation */}
       <AnimatePresence>
@@ -193,13 +205,22 @@ export default function Home() {
 
 
 
-      <div className="flex flex-col lg:block px-6 pt-24 pb-36 lg:p-0 gap-6 lg:gap-0 w-full lg:w-auto relative min-h-screen">
+      <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 xl:block px-6 md:px-8 xl:px-0 pt-24 pb-36 xl:p-0 gap-4 md:gap-6 xl:gap-0 w-full relative min-h-screen xl:h-screen max-w-[1600px] xl:max-w-none mx-auto">
         {/* Hero Section */}
-        <div className="relative lg:absolute lg:top-20 lg:left-8 xl:left-16 max-w-lg z-20 pointer-events-none order-1 mx-auto lg:mx-0 w-full mb-8 lg:mb-0">
-          <h1 className="title-serif text-5xl md:text-[90px] text-white mb-2 leading-none pointer-events-auto">{content.hero.fullName}</h1>
-          <div className="font-mono-spaced text-[10px] text-gray-400 mb-8 tracking-[0.2em] flex flex-col gap-1.5">
-            <span>{content.hero.subtitle}</span>
-            <span className="text-[#10b981]">BUILDING SERVERLESS ARCHITECTURE</span>
+        <div className="relative xl:absolute xl:top-20 xl:left-8 xl:left-16 max-w-lg md:max-w-none xl:max-w-lg z-20 pointer-events-none mx-auto xl:mx-0 w-full mb-8 md:mb-0 xl:mb-0 md:col-span-2 lg:col-span-2 flex flex-col justify-center">
+          <div className="flex items-start justify-between gap-3 mb-8 pointer-events-auto mt-2 xl:mt-0">
+            <div className="flex flex-col">
+              <h1 className="title-serif text-5xl md:text-[90px] text-white leading-none mb-2 md:mb-4">{content.hero.fullName}</h1>
+              <div className="font-mono-spaced text-[10px] text-gray-400 tracking-[0.2em] flex flex-col gap-1.5">
+                <span>{content.hero.subtitle}</span>
+                <span className="text-[#10b981]">BUILDING SERVERLESS ARCHITECTURE</span>
+              </div>
+            </div>
+            
+            {/* Inline Portrait */}
+            <div className="xl:hidden w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border border-white/20 overflow-hidden shrink-0 shadow-xl bg-[#111]/80 flex items-center justify-center mt-1">
+              <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
+            </div>
           </div>
           <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
             <p className="text-[#9a9a9a] text-sm md:text-lg leading-relaxed">{content.hero.bio}</p>
@@ -214,54 +235,57 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Portrait Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-24 lg:left-1/2 lg:-translate-x-1/2 w-full max-w-[300px] mx-auto lg:max-w-none lg:w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl order-2 mb-6 lg:mb-0">
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full z-10" />
+        {/* Desktop Portrait Widget */}
+        <motion.div drag dragControls={portraitDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="hidden xl:flex absolute xl:top-24 xl:left-1/2 xl:-translate-x-1/2 w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl">
+          <div onPointerDown={(e) => portraitDrag.start(e)} className="absolute top-0 left-0 w-full h-8 flex items-center justify-center z-10 touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
           <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
         </motion.div>
 
-        {/* Status Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-20 lg:right-20 w-full lg:w-72 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-3 mb-6 lg:mb-0 mx-auto">
-          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-            <span className="font-mono-spaced text-[10px] text-gray-500">{content.widgets.status.label}</span>
-          </div>
-          <div className="text-sm text-gray-300">{content.widgets.status.text}</div>
-        </motion.div>
-
-        {/* Quote Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:top-52 lg:right-16 w-full lg:w-80 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-4 mb-6 lg:mb-0 mx-auto">
-          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-6" />
-          <div className="relative h-[110px] w-full">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={quoteIndex}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 flex flex-col"
-              >
-                <p className="text-white font-medium text-lg leading-snug mb-auto">"{((content as any).widgets.quotes)[quoteIndex].text}"</p>
-                <div className="text-right mt-2">
-                  <span className="font-mono-spaced text-[10px] text-gray-500">{((content as any).widgets.quotes)[quoteIndex].author}</span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <div className="flex justify-between items-center mt-6">
-            <div className="flex gap-1">
-              {((content as any).widgets.quotes).map((_: any, idx: number) => (
-                <div key={idx} className={`h-1.5 rounded-full transition-all duration-500 ${idx === quoteIndex ? 'w-4 bg-white/80' : 'w-1.5 bg-white/20'}`} />
-              ))}
+        {/* Status & Quote Column Wrapper (Stacked in Grid, Independent in OS) */}
+        <div className="md:col-span-2 lg:col-span-1 flex flex-col gap-4 md:gap-6 xl:contents">
+          {/* Status Widget */}
+          <motion.div drag dragControls={statusDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:top-20 xl:right-20 w-full xl:w-72 md:h-full xl:h-auto md:min-h-[120px] xl:min-h-0 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl mb-6 md:mb-0 xl:mb-0 mx-auto flex flex-col justify-center">
+            <div onPointerDown={(e) => statusDrag.start(e)} className="w-full py-2 -mt-2 mb-2 flex justify-center touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+              <span className="font-mono-spaced text-[10px] text-gray-500">{content.widgets.status.label}</span>
             </div>
-          </div>
-        </motion.div>
+            <div className="text-sm text-gray-300">{content.widgets.status.text}</div>
+          </motion.div>
+
+          {/* Quote Widget */}
+          <motion.div drag dragControls={quoteDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:top-52 xl:right-16 w-full xl:w-80 md:h-full xl:h-auto md:min-h-[180px] xl:min-h-0 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl mb-6 md:mb-0 xl:mb-0 mx-auto">
+            <div onPointerDown={(e) => quoteDrag.start(e)} className="w-full py-2 -mt-2 mb-4 flex justify-center touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
+            <div className="relative h-[110px] w-full">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={quoteIndex}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 flex flex-col"
+                >
+                  <p className="text-white font-medium text-lg leading-snug mb-auto">"{((content as any).widgets.quotes)[quoteIndex].text}"</p>
+                  <div className="text-right mt-2">
+                    <span className="font-mono-spaced text-[10px] text-gray-500">{((content as any).widgets.quotes)[quoteIndex].author}</span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="flex justify-between items-center mt-6">
+              <div className="flex gap-1">
+                {((content as any).widgets.quotes).map((_: any, idx: number) => (
+                  <div key={idx} className={`h-1.5 rounded-full transition-all duration-500 ${idx === quoteIndex ? 'w-4 bg-white/80' : 'w-1.5 bg-white/20'}`} />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Leadership Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-20 lg:left-8 xl:left-12 w-full lg:w-[380px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-5 mb-6 lg:mb-0 mx-auto">
-          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+        <motion.div drag dragControls={leadershipDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:bottom-20 xl:left-8 xl:left-12 w-full xl:w-[380px] md:h-full xl:h-auto md:min-h-[200px] xl:min-h-0 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 z-20 cursor-grab active:cursor-grabbing shadow-2xl mb-6 md:mb-0 xl:mb-0 mx-auto flex flex-col md:col-span-2 lg:col-span-1">
+            <div onPointerDown={(e) => leadershipDrag.start(e)} className="w-full py-2 -mt-2 mb-2 flex justify-center touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
           <div className="flex justify-between items-center mb-5">
             <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#10b981]" /> LEADERSHIP
@@ -281,8 +305,8 @@ export default function Home() {
         </motion.div>
 
         {/* LeetCode Heatmap Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:right-8 xl:right-12 w-full lg:w-[480px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing order-6 mb-6 lg:mb-0 mx-auto overflow-hidden">
-          <div className="w-8 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+        <motion.div drag dragControls={leetcodeDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:bottom-24 xl:right-8 xl:right-12 w-full xl:w-[480px] md:h-full xl:h-auto md:min-h-[200px] xl:min-h-0 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing mb-6 md:mb-0 xl:mb-0 mx-auto overflow-x-auto overflow-y-hidden hide-scrollbar flex flex-col md:col-span-2 lg:col-span-2">
+            <div onPointerDown={(e) => leetcodeDrag.start(e)} className="w-full py-2 -mt-2 mb-2 flex justify-center touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
           <div className="flex justify-between items-center mb-4">
             <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">LEETCODE ACTIVITY {leetcodeData && <span className="text-[#10b981] lowercase">({leetcodeData.totalActiveDays} active days)</span>}</span>
             <div className="w-2 h-2 rounded-full bg-[#10b981]" />
@@ -305,8 +329,8 @@ export default function Home() {
         </motion.div>
 
         {/* Live Server Diagnostics Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-32 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[320px] xl:w-[400px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-white/20 rounded-full" />
+        <motion.div drag dragControls={serverDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:bottom-32 xl:left-1/2 xl:-translate-x-1/2 w-full xl:w-[400px] h-auto bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl mx-auto mb-16 md:mb-0 xl:mb-0 flex flex-col md:col-span-2 lg:col-span-1">
+          <div onPointerDown={(e) => serverDrag.start(e)} className="absolute top-0 left-0 w-full h-8 flex items-center justify-center z-10 touch-none cursor-grab active:cursor-grabbing"><div className="w-10 h-1.5 bg-white/20 rounded-full" /></div>
           
           <div className="font-mono-spaced text-[11px] text-gray-400 tracking-widest flex items-center justify-between mb-5 mt-1">
             <div className="flex items-center gap-2.5">
@@ -382,8 +406,9 @@ export default function Home() {
 
       {/* Command Palette Placeholder (Bottom Right) */}
       <div className="fixed bottom-6 right-6 z-40 hidden md:block">
-        <button className="px-4 py-2 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-full font-mono-spaced text-[10px] text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
-          &gt; CTRL K
+        <button onClick={handleReset} className="px-4 py-2 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-full font-mono-spaced text-[10px] text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          RESET LAYOUT
         </button>
       </div>
 
@@ -578,6 +603,7 @@ export default function Home() {
         onFocus={() => focusWindow("terminal")}
       />
       
+    </KineticGrid>
     </main>
   );
 }

@@ -174,7 +174,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
 
   return (
     <Window id="terminal" title="TERMINAL" isOpen={isOpen} onClose={onClose} zIndex={zIndex} onFocus={onFocus}>
-      <div className={`flex flex-col h-full ${bgClass} -m-8 p-4 font-mono-spaced text-[12px] min-h-[400px] overflow-y-auto cursor-text`} onClick={() => document.getElementById('terminal-input')?.focus()}>
+      <div className={`flex flex-col h-full ${bgClass} -m-4 sm:-m-8 p-4 font-mono-spaced text-[12px] min-h-[400px] overflow-y-auto cursor-text`} onClick={() => document.getElementById('terminal-input')?.focus()}>
         {history.map((line, i) => (
           <div key={i} className={`mb-1 whitespace-pre-wrap leading-relaxed ${line.type === 'input' ? textInputClass : `${textOutputClass} opacity-90`}`}>
             {line.text}

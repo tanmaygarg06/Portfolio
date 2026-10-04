@@ -1,6 +1,6 @@
 "use client";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Briefcase, Terminal as TerminalIcon, Cpu, Award, FileText, Mail, Monitor } from "lucide-react";
 
 const GithubIcon = (props: any) => (
@@ -49,7 +49,7 @@ export default function Dock({ onOpenWindow, activeWindows }: DockProps) {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] hidden sm:flex">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex max-w-[95vw] overflow-x-auto md:overflow-visible scrollbar-hide hide-scrollbar rounded-2xl pb-4">
       <motion.div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
@@ -57,7 +57,7 @@ export default function Dock({ onOpenWindow, activeWindows }: DockProps) {
       >
         {items.map((item, i) => {
           if (item.type === "divider") {
-            return <div key={i} className="w-[1px] h-8 bg-white/10 self-center mx-2" />;
+            return <div key={i} className="w-[1px] h-8 bg-white/20 self-center mx-2 shrink-0" />;
           }
           return (
             <DockIcon
@@ -89,6 +89,16 @@ function DockIcon({ item, mouseX, isOpen, onClick }: any) {
   const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
 
   const [hovered, setHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const currentWidth = isMobile ? 40 : width;
 
   return (
     <div className="relative flex flex-col items-center justify-end h-full">
@@ -103,7 +113,7 @@ function DockIcon({ item, mouseX, isOpen, onClick }: any) {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ width, height: width }}
+          style={{ width: currentWidth, height: currentWidth }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className="relative flex items-center justify-center rounded-xl shrink-0 cursor-pointer"
@@ -113,7 +123,7 @@ function DockIcon({ item, mouseX, isOpen, onClick }: any) {
       ) : (
         <motion.button
           ref={ref as any}
-          style={{ width, height: width }}
+          style={{ width: currentWidth, height: currentWidth }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={onClick}

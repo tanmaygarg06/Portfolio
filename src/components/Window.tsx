@@ -27,10 +27,10 @@ export default function Window({ id, title, vol, isOpen, onClose, children, zInd
       animate={{ 
         opacity: 1, 
         scale: 1,
-        width: isMaximized ? "100vw" : "800px",
-        height: isMaximized ? "100vh" : "600px",
-        x: isMaximized ? 0 : "max(0px, calc(50vw - 400px))",
-        y: isMaximized ? 0 : "max(0px, calc(50vh - 300px))",
+        width: isMaximized ? "100vw" : "min(800px, 90vw)",
+        height: isMaximized ? "100vh" : "min(600px, 85vh)",
+        x: isMaximized ? 0 : "max(5vw, calc(50vw - 400px))",
+        y: isMaximized ? 0 : "max(5vh, calc(50vh - 300px))",
         position: "fixed",
         top: 0,
         left: 0
@@ -75,7 +75,7 @@ export default function Window({ id, title, vol, isOpen, onClose, children, zInd
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto window-scroll p-8 text-gray-300 bg-gradient-to-b from-transparent to-black/20">
+      <div className="flex-1 overflow-y-auto window-scroll p-4 sm:p-8 text-gray-300 bg-gradient-to-b from-transparent to-black/20">
         {children}
       </div>
     </motion.div>
