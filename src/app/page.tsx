@@ -76,12 +76,9 @@ export default function Home() {
   }, []);
 
   const openWindow = (id: string) => {
-    if (!activeWindows.find(w => w.id === id)) {
-      setActiveWindows([...activeWindows, { id, zIndex: maxZIndex + 1 }]);
-      setMaxZIndex(maxZIndex + 1);
-    } else {
-      focusWindow(id);
-    }
+    // Automatically close all other windows when a new one is opened
+    setActiveWindows([{ id, zIndex: maxZIndex + 1 }]);
+    setMaxZIndex(maxZIndex + 1);
   };
 
   const closeWindow = (id: string) => {
