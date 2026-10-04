@@ -308,27 +308,27 @@ export default function Home() {
         </motion.div>
 
         {/* Live Server Diagnostics Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[340px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[420px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-white/20 rounded-full" />
           
-          <div className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center justify-between mb-4 mt-1">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+          <div className="font-mono-spaced text-[11px] text-gray-400 tracking-widest flex items-center justify-between mb-5 mt-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse" />
               AWS CLOUDWATCH | AP-SOUTH-1
             </div>
-            <Server className="w-3 h-3 text-gray-500" />
+            <Server className="w-4 h-4 text-gray-500" />
           </div>
           
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
             {/* CPU */}
-            <div className="flex items-center gap-3">
-              <Activity className="w-4 h-4 text-[#10b981]" />
+            <div className="flex items-center gap-4">
+              <Activity className="w-5 h-5 text-[#10b981]" />
               <div className="flex-1">
-                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
                   <span className="text-gray-400">CPU ALLOCATION</span>
                   <span className="text-[#10b981]">{cpuUsage}%</span>
                 </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
                      animate={{ width: `${cpuUsage}%` }} 
                      transition={{ duration: 1, ease: "easeInOut" }} 
@@ -339,14 +339,14 @@ export default function Home() {
             </div>
 
             {/* RAM */}
-            <div className="flex items-center gap-3">
-              <Database className="w-4 h-4 text-purple-400" />
+            <div className="flex items-center gap-4">
+              <Database className="w-5 h-5 text-purple-400" />
               <div className="flex-1">
-                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
                   <span className="text-gray-400">MEMORY USAGE</span>
                   <span className="text-purple-400">{memoryUsage} GB / 4.0 GB</span>
                 </div>
-                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <motion.div 
                      animate={{ width: `${(memoryUsage/4)*100}%` }} 
                      transition={{ duration: 1, ease: "easeInOut" }} 
@@ -357,20 +357,20 @@ export default function Home() {
             </div>
 
             {/* NET */}
-            <div className="flex items-center gap-3">
-              <BarChart2 className="w-4 h-4 text-blue-400" />
+            <div className="flex items-center gap-4">
+              <BarChart2 className="w-5 h-5 text-blue-400" />
               <div className="flex-1">
-                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
                   <span className="text-gray-400">NETWORK I/O</span>
                   <span className="text-blue-400">{networkLatency} ms</span>
                 </div>
-                <div className="flex items-end gap-[3px] h-3 w-full overflow-hidden">
-                   {Array.from({ length: 42 }).map((_, i) => (
+                <div className="flex items-end gap-[4px] h-4 w-full overflow-hidden">
+                   {Array.from({ length: 50 }).map((_, i) => (
                      <motion.div 
                        key={i}
                        animate={{ height: Math.random() > 0.6 ? '100%' : Math.random() > 0.3 ? '60%' : '30%' }} 
                        transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', delay: i * 0.1 }}
-                       className="w-1 bg-blue-400/80 rounded-t-sm flex-shrink-0"
+                       className="w-1.5 bg-blue-400/80 rounded-t-sm flex-shrink-0"
                      />
                    ))}
                 </div>
