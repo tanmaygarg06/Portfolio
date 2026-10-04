@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Award, Send, Play, Pause } from "lucide-react";
+import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2 } from "lucide-react";
 import { ActivityCalendar } from 'react-activity-calendar';
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
@@ -23,9 +23,12 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
 
   // New Features State
-  const [apiResponse, setApiResponse] = useState<string>("");
-  const [isApiLoading, setIsApiLoading] = useState(false);
   const [leetcodeData, setLeetcodeData] = useState<{calendar: any[], totalActiveDays: number, streak: number} | null>(null);
+  
+  // Metrics State
+  const [cpuUsage, setCpuUsage] = useState(34);
+  const [memoryUsage, setMemoryUsage] = useState(2.1);
+  const [networkLatency, setNetworkLatency] = useState(45);
 
   useEffect(() => {
     fetch('/api/leetcode')
@@ -34,6 +37,15 @@ export default function Home() {
          if (data.calendar) setLeetcodeData(data);
       })
       .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCpuUsage(Math.floor(Math.random() * 30) + 15);
+      setMemoryUsage(+(Math.random() * 0.8 + 1.5).toFixed(1));
+      setNetworkLatency(Math.floor(Math.random() * 40) + 20);
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -122,23 +134,6 @@ export default function Home() {
     : time.getHours() < 21 ? "EVENING PROTOCOL"
     : "LATE NIGHT PROTOCOL"
   ) : "LOADING PROTOCOL";
-
-  const handleApiTest = () => {
-    setIsApiLoading(true);
-    setApiResponse("");
-    setTimeout(() => {
-      setApiResponse(JSON.stringify({
-        status: 200,
-        data: {
-          engineer: "Tanmay Garg",
-          availability: "Open to Internships",
-          skills: ["AWS", "Node", "Docker", "Python", "Kubernetes"],
-          hireable: true
-        }
-      }, null, 2));
-      setIsApiLoading(false);
-    }, 800);
-  };
 
   return (
     <main className="min-h-screen lg:h-screen w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden relative selection:bg-[#10b981]/30 pb-32 lg:pb-0 bg-[#0a0a0b]">
@@ -312,38 +307,74 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Live API Playground Widget */}
+        {/* Live Server Diagnostics Widget */}
         <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-48 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[340px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/20 rounded-full" />
           
-          <div className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center justify-between mb-3 mt-1">
+          <div className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center justify-between mb-4 mt-1">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-              LIVE SYSTEM API
+              AWS CLOUDWATCH | AP-SOUTH-1
             </div>
+            <Server className="w-3 h-3 text-gray-500" />
           </div>
           
-          <div className="bg-[#0a0a0b] border border-white/5 rounded-lg overflow-hidden flex flex-col cursor-text" onPointerDown={(e) => e.stopPropagation()}>
-            <div className="flex bg-[#1a1a1c] border-b border-white/10 px-2 py-1.5 items-center justify-between">
-               <div className="flex items-center gap-2 text-[10px] font-mono-spaced">
-                  <span className="text-[#10b981] font-bold">GET</span>
-                  <span className="text-gray-400">/api/v1/engineer/status</span>
-               </div>
-               <button onClick={handleApiTest} disabled={isApiLoading} className="bg-white/10 hover:bg-white/20 transition-colors text-white text-[9px] font-mono-spaced px-2 py-1 rounded disabled:opacity-50 cursor-pointer">
-                 {isApiLoading ? 'SENDING...' : 'SEND'}
-               </button>
-            </div>
-            <div className="p-3 h-[110px] overflow-y-auto text-[10px] font-mono-spaced text-gray-300">
-              {isApiLoading ? (
-                <div className="flex items-center justify-center h-full opacity-50 animate-pulse">awaiting response...</div>
-              ) : apiResponse ? (
-                <pre className="text-[#10b981] leading-relaxed">{apiResponse}</pre>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full opacity-40 text-gray-500 gap-1">
-                  <div>// Endpoint ready</div>
-                  <div>Hit SEND to fetch data</div>
+          <div className="flex flex-col gap-4">
+            {/* CPU */}
+            <div className="flex items-center gap-3">
+              <Activity className="w-4 h-4 text-[#10b981]" />
+              <div className="flex-1">
+                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                  <span className="text-gray-400">CPU ALLOCATION</span>
+                  <span className="text-[#10b981]">{cpuUsage}%</span>
                 </div>
-              )}
+                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                   <motion.div 
+                     animate={{ width: `${cpuUsage}%` }} 
+                     transition={{ duration: 1, ease: "easeInOut" }} 
+                     className="h-full bg-[#10b981] rounded-full" 
+                   />
+                </div>
+              </div>
+            </div>
+
+            {/* RAM */}
+            <div className="flex items-center gap-3">
+              <Database className="w-4 h-4 text-purple-400" />
+              <div className="flex-1">
+                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                  <span className="text-gray-400">MEMORY USAGE</span>
+                  <span className="text-purple-400">{memoryUsage} GB / 4.0 GB</span>
+                </div>
+                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                   <motion.div 
+                     animate={{ width: `${(memoryUsage/4)*100}%` }} 
+                     transition={{ duration: 1, ease: "easeInOut" }} 
+                     className="h-full bg-purple-400 rounded-full" 
+                   />
+                </div>
+              </div>
+            </div>
+
+            {/* NET */}
+            <div className="flex items-center gap-3">
+              <BarChart2 className="w-4 h-4 text-blue-400" />
+              <div className="flex-1">
+                <div className="flex justify-between text-[10px] font-mono-spaced mb-1.5">
+                  <span className="text-gray-400">NETWORK I/O</span>
+                  <span className="text-blue-400">{networkLatency} ms</span>
+                </div>
+                <div className="flex items-end gap-[3px] h-3 w-full overflow-hidden">
+                   {Array.from({ length: 42 }).map((_, i) => (
+                     <motion.div 
+                       key={i}
+                       animate={{ height: Math.random() > 0.6 ? '100%' : Math.random() > 0.3 ? '60%' : '30%' }} 
+                       transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', delay: i * 0.1 }}
+                       className="w-1 bg-blue-400/80 rounded-t-sm flex-shrink-0"
+                     />
+                   ))}
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
