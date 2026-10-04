@@ -305,7 +305,7 @@ export default function Home() {
         </motion.div>
 
         {/* Live Server Diagnostics Widget */}
-        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-[24rem] lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[420px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
+        <motion.div drag={!isMobile} dragMomentum={false} className="relative lg:absolute lg:bottom-24 lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-[320px] xl:w-[400px] bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing shadow-2xl order-7 mx-auto mb-16 lg:mb-0">
           <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-white/20 rounded-full" />
           
           <div className="font-mono-spaced text-[11px] text-gray-400 tracking-widest flex items-center justify-between mb-5 mt-1">
@@ -322,7 +322,7 @@ export default function Home() {
               <Activity className="w-5 h-5 text-[#10b981] flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between text-[11px] font-mono-spaced mb-2">
-                  <span className="text-gray-400 truncate">CPU ALLOCATION</span>
+                  <span className="text-gray-400 truncate">CPU UTILIZATION</span>
                   <span className="text-[#10b981] flex-shrink-0 ml-2">{cpuUsage}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
