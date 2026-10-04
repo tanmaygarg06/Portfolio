@@ -23,6 +23,7 @@ const INITIAL_MESSAGE = [
   { type: 'output' as const, text: '  theme        - Change OS theme' },
   { type: 'output' as const, text: '  clear        - Clear the terminal' },
   { type: 'output' as const, text: '  close        - Exit the terminal' },
+  { type: 'output' as const, text: '  hire tanmay  - Initiate hiring process' },
   { type: 'output' as const, text: ' ' }
 ];
 
@@ -105,7 +106,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
       let output = "";
       switch (lowerCmd) {
         case 'help':
-          output = "Available commands:\n  whoami\n  skills\n  projects\n  education\n  experience\n  contact\n  theme\n  clear\n  close\n  hire tanmay";
+          output = "Available commands:\n  whoami       - Who is Tanmay?\n  skills       - View technical skills\n  projects     - View my top projects\n  education    - View academic background\n  experience   - View leadership & experience\n  contact      - Get my contact information\n  theme        - Change OS theme\n  clear        - Clear the terminal\n  close        - Exit the terminal\n  hire tanmay  - Initiate hiring process";
           break;
         case 'whoami':
           output = "Tanmay Garg - Software Engineer & Cloud Builder.\nPassionate about scalable backend systems, robust cloud solutions, and competitive programming.";
