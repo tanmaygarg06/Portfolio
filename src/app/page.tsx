@@ -158,37 +158,90 @@ export default function Home() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] bg-[#0a0a0b] flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[999] bg-[#0a0a0b] flex flex-col items-center justify-center"
           >
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
-            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8">
+            <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
+              {/* Outer decorative rings */}
+              <motion.div 
+                animate={{ rotate: 360 }} 
+                transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 md:w-80 md:h-80 border border-white/5 rounded-full border-dashed pointer-events-none"
+              />
+              <motion.div 
+                animate={{ rotate: -360 }} 
+                transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-56 md:h-56 border border-[#10b981]/20 rounded-full border-dashed pointer-events-none"
+              />
+
               <motion.h1
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="title-serif text-4xl md:text-5xl text-white mb-8 tracking-wide text-center"
+                initial={{ opacity: 0, y: 15, filter: "blur(10px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="title-serif text-5xl md:text-6xl text-white mb-12 tracking-wide text-center relative z-10"
               >
                 {content.hero.fullName}
               </motion.h1>
 
-              <div className="w-full">
-                <div className="flex justify-between font-mono-spaced text-[9px] text-gray-500 mb-2 tracking-widest uppercase">
-                  <span>Initializing OS</span>
-                  <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }}>
-                    System.Boot()
+              <div className="w-full relative z-10">
+                <div className="flex justify-between font-mono-spaced text-[10px] text-gray-400 mb-3 tracking-widest uppercase">
+                  <span>System Initialization</span>
+                  <motion.span 
+                    animate={{ opacity: [1, 0] }} 
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="text-[#10b981]"
+                  >
+                    _BOOTING
                   </motion.span>
                 </div>
-                <div className="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                
+                <div className="h-[3px] w-full bg-white/10 rounded-full overflow-hidden relative mb-5">
                   <motion.div
                     initial={{ width: "0%" }}
                     animate={{ width: "100%" }}
-                    transition={{ duration: 3.5, delay: 0.4, ease: "easeInOut" }}
-                    className="h-full bg-[#10b981]"
-                  />
+                    transition={{ duration: 3.8, delay: 0.2, ease: "circInOut" }}
+                    className="h-full bg-[#10b981] relative overflow-hidden"
+                  >
+                    {/* Shimmer effect inside the loading bar */}
+                    <motion.div 
+                      animate={{ x: ["-100%", "200%"] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                      className="absolute top-0 bottom-0 left-0 w-1/2 bg-white/40 blur-[2px]"
+                    />
+                  </motion.div>
                 </div>
-                <div className="mt-3 font-mono-spaced text-[8px] text-gray-600 tracking-widest text-center">
-                  LOADING WORKSPACE & MODULES...
+                
+                {/* Boot Sequence Terminal Text */}
+                <div className="font-mono-spaced text-[9px] md:text-[10px] text-gray-500 tracking-widest flex flex-col gap-2 h-20 overflow-hidden">
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> CORE MODULES LOADED
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> ESTABLISHED SECURE UPLINK
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 2.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> VIRTUAL WORKSPACE MOUNTED
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 3.5 }}
+                  >
+                    <span className="text-emerald-400 animate-pulse mr-2">[&gt;&gt;]</span> INITIATING INTERFACE...
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -402,15 +455,19 @@ export default function Home() {
       </div>
 
       {/* Dock */}
-      <Dock onOpenWindow={openWindow} activeWindows={activeWindows.map(w => w.id)} />
+      {!isLoading && (
+        <Dock onOpenWindow={openWindow} activeWindows={activeWindows.map(w => w.id)} />
+      )}
 
       {/* Command Palette Placeholder (Bottom Right) */}
-      <div className="fixed bottom-6 right-6 z-40 hidden md:block">
-        <button onClick={handleReset} className="px-4 py-2 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-full font-mono-spaced text-[10px] text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          RESET LAYOUT
-        </button>
-      </div>
+      {!isLoading && (
+        <div className="fixed bottom-6 right-6 z-40 hidden md:block">
+          <button onClick={handleReset} className="px-4 py-2 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-full font-mono-spaced text-[10px] text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            RESET LAYOUT
+          </button>
+        </div>
+      )}
 
       {/* Windows Layer */}
       {activeWindows.find(w => w.id === "experience") && (
