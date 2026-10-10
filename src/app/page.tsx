@@ -163,18 +163,6 @@ export default function Home() {
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
             <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
-              {/* Outer decorative rings */}
-              <motion.div 
-                animate={{ rotate: 360 }} 
-                transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 md:w-80 md:h-80 border border-white/5 rounded-full border-dashed pointer-events-none"
-              />
-              <motion.div 
-                animate={{ rotate: -360 }} 
-                transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-56 md:h-56 border border-[#10b981]/20 rounded-full border-dashed pointer-events-none"
-              />
-
               <motion.h1
                 initial={{ opacity: 0, y: 15, filter: "blur(10px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
