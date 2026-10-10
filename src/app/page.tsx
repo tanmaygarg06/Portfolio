@@ -175,9 +175,63 @@ export default function Home() {
             {/* Cinematic Moving Grid */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
 
+            {/* --- PERIPHERAL HUD ELEMENTS --- */}
+            {/* Viewfinder crosshairs */}
+            <div className="absolute top-8 left-8 w-8 h-8 border-t border-l border-white/10 pointer-events-none hidden md:block" />
+            <div className="absolute top-8 right-8 w-8 h-8 border-t border-r border-white/10 pointer-events-none hidden md:block" />
+            <div className="absolute bottom-8 left-8 w-8 h-8 border-b border-l border-white/10 pointer-events-none hidden md:block" />
+            <div className="absolute bottom-8 right-8 w-8 h-8 border-b border-r border-white/10 pointer-events-none hidden md:block" />
+
+            {/* Top Left: Terminal output */}
+            <div className="absolute top-10 left-12 font-mono-spaced text-[9px] text-emerald-500/50 hidden md:block pointer-events-none">
+              <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.5 }} className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" /> REC_
+              </motion.div>
+              <div className="mt-2 text-gray-500">SYS.CORE.v2.4.9</div>
+              <div className="text-gray-500">MEM: OPTIMAL</div>
+              <div className="text-gray-500">NET: UPLINK_ESTABLISHED</div>
+            </div>
+
+            {/* Top Right: Radar / Scanner */}
+            <div className="absolute top-10 right-12 hidden md:flex items-center justify-center w-12 h-12 border border-white/5 rounded-full pointer-events-none">
+              <motion.div 
+                animate={{ rotate: 360 }} 
+                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                className="absolute inset-0 border-t-2 border-emerald-500/40 rounded-full"
+              />
+              <motion.div 
+                animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }} 
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="w-1.5 h-1.5 bg-emerald-500/50 rounded-full" 
+              />
+            </div>
+
+            {/* Bottom Left: Hex codes */}
+            <div className="absolute bottom-10 left-12 font-mono-spaced text-[8px] text-gray-600 hidden md:flex flex-col gap-1 pointer-events-none">
+              <div>0x00A1F3</div>
+              <div>0x00B2E1</div>
+              <div>0x00C4F9</div>
+              <motion.div animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="text-emerald-500/60 mt-1">
+                _AWAITING_INPUT
+              </motion.div>
+            </div>
+
+            {/* Bottom Right: Barcode */}
+            <div className="absolute bottom-10 right-12 hidden md:flex items-end gap-[3px] opacity-30 pointer-events-none">
+               {[12, 24, 15, 30, 10, 20, 14, 28, 16, 22, 10, 30, 18, 12, 25].map((h, i) => (
+                 <motion.div 
+                   key={i} 
+                   animate={{ opacity: [0.3, 1, 0.3] }}
+                   transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
+                   style={{ height: h }}
+                   className="w-[2px] bg-white" 
+                 />
+               ))}
+            </div>
+
             <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
               {/* Stunning Text Reveal */}
-              <div className="relative mb-16">
+              <div className="relative mb-12 w-full flex flex-col items-center">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
@@ -188,6 +242,21 @@ export default function Home() {
                     {content.hero.fullName}
                   </h1>
                 </motion.div>
+                
+                {/* High-tech animated underline */}
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "80%", opacity: 1 }}
+                  transition={{ duration: 1.5, delay: 1, ease: "easeInOut" }}
+                  className="h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent mt-6 relative"
+                >
+                  <motion.div 
+                    animate={{ x: ["-100%", "300%"] }}
+                    transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                    className="absolute top-0 bottom-0 left-0 w-1/4 bg-white/40 blur-[1px]"
+                  />
+                </motion.div>
+
                 {/* Glow behind text */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -197,11 +266,21 @@ export default function Home() {
                 />
               </div>
 
-              <div className="w-full relative z-10 flex flex-col items-center mt-4">
+              <div className="w-full relative z-10 flex flex-col items-center mt-2">
+                {/* Instruction Text */}
                 <motion.div
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
+                  transition={{ delay: 1.2, duration: 1 }}
+                  className="font-mono-spaced text-[8px] text-emerald-500/70 mb-6 tracking-[0.3em] text-center uppercase"
+                >
+                  ACCESS PROTOCOL REQUIRED
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.4, duration: 0.8 }}
                   className="w-full flex justify-center"
                 >
                   <SwipeToStart onUnlock={() => setIsLoading(false)} />
