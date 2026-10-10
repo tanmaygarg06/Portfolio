@@ -169,12 +169,24 @@ export default function Home() {
               transition={{ delay: 0.3, duration: 1 }}
               className="z-10 flex flex-col items-center mt-16"
             >
-              <h2 className="text-white text-[80px] md:text-[100px] font-semibold tracking-tighter mb-2 leading-none" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+              <h2 className="text-white text-[80px] md:text-[100px] font-semibold tracking-tighter mb-2 leading-none drop-shadow-lg" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                 {time ? time.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true }).replace(/^0/, '') : "00:00 AM"}
               </h2>
-              <p className="text-gray-200 text-xl md:text-2xl font-medium tracking-wide" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+              <p className="text-gray-200 text-xl md:text-2xl font-medium tracking-wide drop-shadow-md" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                 {time ? time.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata', weekday: 'long', month: 'long', day: 'numeric' }) : ""}
               </p>
+              
+              {/* iOS Style Lockscreen Widgets */}
+              <div className="flex items-center gap-4 mt-6">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                  <Activity className="w-3.5 h-3.5 text-[#10b981]" />
+                  <span className="text-white/80 text-xs font-medium">Status: Online</span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                  <Server className="w-3.5 h-3.5 text-[#10b981]" />
+                  <span className="text-white/80 text-xs font-medium">Systems Nominal</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Swipe to Start Section */}
@@ -186,15 +198,18 @@ export default function Home() {
                 transition={{ duration: 1, delay: 0.6 }}
                 className="flex flex-col items-center mb-12 text-center"
               >
-                <p className="text-gray-300 text-2xl md:text-3xl font-light mb-2" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                <p className="text-[#10b981] text-xs font-semibold mb-2 tracking-[0.2em] uppercase" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                   {time ? (() => {
                     const h = parseInt(time.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false }), 10);
-                    return h < 12 ? 'Good Morning,' : h < 17 ? 'Good Afternoon,' : 'Good Evening,';
-                  })() : "Welcome,"}
+                    return h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+                  })() : "Welcome"}
                 </p>
-                <h1 className="text-white text-5xl md:text-6xl font-semibold tracking-tight" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-[#10b981] text-5xl md:text-6xl font-bold tracking-tight whitespace-nowrap drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                   {content.hero.fullName}
                 </h1>
+                <p className="text-gray-400 text-[10px] mt-4 font-mono-spaced tracking-[0.2em] uppercase">
+                  {content.hero.subtitle}
+                </p>
               </motion.div>
 
               <motion.div
