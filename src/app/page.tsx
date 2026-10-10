@@ -234,49 +234,6 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* System Vitals Rings Widget */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="z-10 mt-6 w-full max-w-[320px] px-2"
-            >
-              <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 flex items-center gap-6 shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-purple-500/10 pointer-events-none" />
-                
-                {/* SVG Rings */}
-                <div className="relative w-[72px] h-[72px] shrink-0 z-10">
-                  <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                    {/* Background Rings */}
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="12" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                    
-                    {/* Animated Foreground Rings */}
-                    <motion.circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round" strokeDasharray="251.2" animate={{ strokeDashoffset: 251.2 * (1 - cpuUsage / 100) }} transition={{ duration: 1, ease: "easeInOut" }} />
-                    <motion.circle cx="50" cy="50" r="26" fill="none" stroke="#3b82f6" strokeWidth="8" strokeLinecap="round" strokeDasharray="163.4" animate={{ strokeDashoffset: 163.4 * (1 - (memoryUsage / 8)) }} transition={{ duration: 1, ease: "easeInOut" }} />
-                    <motion.circle cx="50" cy="50" r="12" fill="none" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeDasharray="75.4" animate={{ strokeDashoffset: 75.4 * (1 - (networkLatency / 100)) }} transition={{ duration: 1, ease: "easeInOut" }} />
-                  </svg>
-                </div>
-                
-                {/* Stats Info */}
-                <div className="flex flex-col flex-1 z-10 font-mono-spaced">
-                  <h3 className="text-white text-xs font-bold tracking-[0.2em] mb-3">SYSTEM VITALS</h3>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[#10b981] text-[10px] font-bold">CPU</span>
-                    <span className="text-white/80 text-[10px]">{cpuUsage}%</span>
-                  </div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[#3b82f6] text-[10px] font-bold">MEM</span>
-                    <span className="text-white/80 text-[10px]">{memoryUsage} GB</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#a855f7] text-[10px] font-bold">NET</span>
-                    <span className="text-white/80 text-[10px]">{networkLatency} MS</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
 
             {/* Swipe to Start Section */}
             <div className="z-10 flex flex-col items-center w-full max-w-sm px-8 mb-16">
