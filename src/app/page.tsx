@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence, useDragControls, useAnimation } from "framer-motion";
-import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2, Camera, Wifi, Battery, Signal, Zap, Flashlight } from "lucide-react";
+import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2, Camera, Wifi, Battery, Signal, Zap, Flashlight, Play, Pause, SkipBack, SkipForward, Music } from "lucide-react";
 import { ActivityCalendar } from 'react-activity-calendar';
 import KineticGrid from "@/components/ui/kinetic-grid";
 import Dock from "@/components/Dock";
@@ -34,6 +34,7 @@ export default function Home() {
   // Lockscreen Actions State
   const [isFlashlightOn, setIsFlashlightOn] = useState(false);
   const [isCameraFlashing, setIsCameraFlashing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   
   const handleCameraClick = () => {
     setIsCameraFlashing(true);
@@ -169,6 +170,13 @@ export default function Home() {
             <div className="absolute inset-0 pointer-events-none">
               <KineticGrid globalColor="default" />
             </div>
+
+            {/* Aurora / Mesh Gradient Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
+              <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-emerald-500/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '8s' }} />
+              <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
+              <div className="absolute -bottom-[20%] left-[20%] w-[80%] h-[80%] rounded-full bg-purple-500/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }} />
+            </div>
             
             {/* Dark overlay to make lockscreen elements pop */}
             <div className="absolute inset-0 bg-[#0a0a0b]/40 pointer-events-none" />
@@ -222,6 +230,54 @@ export default function Home() {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                   <Server className="w-3.5 h-3.5 text-[#10b981]" />
                   <span className="text-white/80 text-xs font-medium">Systems Nominal</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* iOS Music Player Widget */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="z-10 mt-6 w-full max-w-[320px] px-2"
+            >
+              <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 flex flex-col gap-4 shadow-2xl overflow-hidden relative">
+                {/* Dynamic colored background for music widget based on album art */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-emerald-500/10 pointer-events-none" />
+                
+                <div className="flex items-center gap-4 relative z-10">
+                  {/* Album Art (Colorful) */}
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 shadow-lg flex items-center justify-center relative overflow-hidden shrink-0">
+                     {isPlaying && <div className="absolute inset-0 bg-white/20 animate-pulse" />}
+                     <Music className="w-6 h-6 text-white" />
+                  </div>
+                  
+                  {/* Song Info */}
+                  <div className="flex-col flex flex-1 overflow-hidden">
+                    <h3 className="text-white text-sm font-semibold leading-tight truncate">Building the Future</h3>
+                    <p className="text-white/60 text-xs truncate">Tanmay Garg</p>
+                  </div>
+                  
+                  {/* Audio Wave / EQ Animation */}
+                  {isPlaying && (
+                    <div className="flex items-end gap-1 h-4 mr-2">
+                      <motion.div animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-full" />
+                      <motion.div animate={{ height: [8, 16, 8] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-1 bg-[#10b981] rounded-full" />
+                      <motion.div animate={{ height: [4, 10, 4] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-full" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Controls */}
+                <div className="flex items-center justify-center gap-8 relative z-10 mt-1">
+                  <SkipBack className="w-5 h-5 text-white/70 hover:text-white cursor-pointer active:scale-90 transition-all" />
+                  <div 
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-lg"
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black ml-0.5" />}
+                  </div>
+                  <SkipForward className="w-5 h-5 text-white/70 hover:text-white cursor-pointer active:scale-90 transition-all" />
                 </div>
               </div>
             </motion.div>
