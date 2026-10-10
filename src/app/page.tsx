@@ -234,50 +234,46 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* iOS Music Player Widget */}
+            {/* System Vitals Rings Widget */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.8 }}
               className="z-10 mt-6 w-full max-w-[320px] px-2"
             >
-              <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 flex flex-col gap-4 shadow-2xl overflow-hidden relative">
-                {/* Dynamic colored background for music widget based on album art */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-emerald-500/10 pointer-events-none" />
+              <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 flex items-center gap-6 shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-purple-500/10 pointer-events-none" />
                 
-                <div className="flex items-center gap-4 relative z-10">
-                  {/* Album Art (Colorful) */}
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 shadow-lg flex items-center justify-center relative overflow-hidden shrink-0">
-                     {isPlaying && <div className="absolute inset-0 bg-white/20 animate-pulse" />}
-                     <Music className="w-6 h-6 text-white" />
-                  </div>
-                  
-                  {/* Song Info */}
-                  <div className="flex-col flex flex-1 overflow-hidden">
-                    <h3 className="text-white text-sm font-semibold leading-tight truncate">Building the Future</h3>
-                    <p className="text-white/60 text-xs truncate">Tanmay Garg</p>
-                  </div>
-                  
-                  {/* Audio Wave / EQ Animation */}
-                  {isPlaying && (
-                    <div className="flex items-end gap-1 h-4 mr-2">
-                      <motion.div animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-[#10b981] rounded-full" />
-                      <motion.div animate={{ height: [8, 16, 8] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-1 bg-[#10b981] rounded-full" />
-                      <motion.div animate={{ height: [4, 10, 4] }} transition={{ repeat: Infinity, duration: 0.9 }} className="w-1 bg-[#10b981] rounded-full" />
-                    </div>
-                  )}
+                {/* SVG Rings */}
+                <div className="relative w-[72px] h-[72px] shrink-0 z-10">
+                  <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                    {/* Background Rings */}
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+                    <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+                    <circle cx="50" cy="50" r="12" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
+                    
+                    {/* Animated Foreground Rings */}
+                    <motion.circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round" strokeDasharray="251.2" animate={{ strokeDashoffset: 251.2 * (1 - cpuUsage / 100) }} transition={{ duration: 1, ease: "easeInOut" }} />
+                    <motion.circle cx="50" cy="50" r="26" fill="none" stroke="#3b82f6" strokeWidth="8" strokeLinecap="round" strokeDasharray="163.4" animate={{ strokeDashoffset: 163.4 * (1 - (memoryUsage / 8)) }} transition={{ duration: 1, ease: "easeInOut" }} />
+                    <motion.circle cx="50" cy="50" r="12" fill="none" stroke="#a855f7" strokeWidth="8" strokeLinecap="round" strokeDasharray="75.4" animate={{ strokeDashoffset: 75.4 * (1 - (networkLatency / 100)) }} transition={{ duration: 1, ease: "easeInOut" }} />
+                  </svg>
                 </div>
                 
-                {/* Controls */}
-                <div className="flex items-center justify-center gap-8 relative z-10 mt-1">
-                  <SkipBack className="w-5 h-5 text-white/70 hover:text-white cursor-pointer active:scale-90 transition-all" />
-                  <div 
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-lg"
-                  >
-                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black ml-0.5" />}
+                {/* Stats Info */}
+                <div className="flex flex-col flex-1 z-10 font-mono-spaced">
+                  <h3 className="text-white text-xs font-bold tracking-[0.2em] mb-3">SYSTEM VITALS</h3>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[#10b981] text-[10px] font-bold">CPU</span>
+                    <span className="text-white/80 text-[10px]">{cpuUsage}%</span>
                   </div>
-                  <SkipForward className="w-5 h-5 text-white/70 hover:text-white cursor-pointer active:scale-90 transition-all" />
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[#3b82f6] text-[10px] font-bold">MEM</span>
+                    <span className="text-white/80 text-[10px]">{memoryUsage} GB</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#a855f7] text-[10px] font-bold">NET</span>
+                    <span className="text-white/80 text-[10px]">{networkLatency} MS</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
