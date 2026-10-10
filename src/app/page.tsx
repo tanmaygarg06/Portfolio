@@ -8,6 +8,7 @@ import KineticGrid from "@/components/ui/kinetic-grid";
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
+import SwipeToStart from "@/components/SwipeToStart";
 import { content } from "@/data/content";
 
 export default function Home() {
@@ -67,13 +68,6 @@ export default function Home() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4500);
-    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -172,65 +166,15 @@ export default function Home() {
                 {content.hero.fullName}
               </motion.h1>
 
-              <div className="w-full relative z-10">
-                <div className="flex justify-between font-mono-spaced text-[10px] text-gray-400 mb-3 tracking-widest uppercase">
-                  <span>System Initialization</span>
-                  <motion.span 
-                    animate={{ opacity: [1, 0] }} 
-                    transition={{ repeat: Infinity, duration: 0.8 }}
-                    className="text-[#10b981]"
-                  >
-                    _BOOTING
-                  </motion.span>
-                </div>
-                
-                <div className="h-[3px] w-full bg-white/10 rounded-full overflow-hidden relative mb-5">
-                  <motion.div
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 3.8, delay: 0.2, ease: "circInOut" }}
-                    className="h-full bg-[#10b981] relative overflow-hidden"
-                  >
-                    {/* Shimmer effect inside the loading bar */}
-                    <motion.div 
-                      animate={{ x: ["-100%", "200%"] }}
-                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                      className="absolute top-0 bottom-0 left-0 w-1/2 bg-white/40 blur-[2px]"
-                    />
-                  </motion.div>
-                </div>
-                
-                {/* Boot Sequence Terminal Text */}
-                <div className="font-mono-spaced text-[9px] md:text-[10px] text-gray-500 tracking-widest flex flex-col gap-2 h-20 overflow-hidden">
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <span className="text-[#10b981] mr-2">[OK]</span> CORE MODULES LOADED
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.5 }}
-                  >
-                    <span className="text-[#10b981] mr-2">[OK]</span> ESTABLISHED SECURE UPLINK
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 2.5 }}
-                  >
-                    <span className="text-[#10b981] mr-2">[OK]</span> VIRTUAL WORKSPACE MOUNTED
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 3.5 }}
-                  >
-                    <span className="text-emerald-400 animate-pulse mr-2">[&gt;&gt;]</span> INITIATING INTERFACE...
-                  </motion.div>
-                </div>
+              <div className="w-full relative z-10 flex flex-col items-center mt-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                  className="w-full flex justify-center"
+                >
+                  <SwipeToStart onUnlock={() => setIsLoading(false)} />
+                </motion.div>
               </div>
             </div>
           </motion.div>
