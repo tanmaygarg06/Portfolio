@@ -31,6 +31,17 @@ export default function Home() {
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Lockscreen Actions State
+  const [isFlashlightOn, setIsFlashlightOn] = useState(false);
+  const [isCameraFlashing, setIsCameraFlashing] = useState(false);
+  
+  const handleCameraClick = () => {
+    setIsCameraFlashing(true);
+    setTimeout(() => {
+      setIsCameraFlashing(false);
+    }, 150);
+  };
+
   // Contact Form State
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
@@ -162,6 +173,20 @@ export default function Home() {
             {/* Dark overlay to make lockscreen elements pop */}
             <div className="absolute inset-0 bg-[#0a0a0b]/40 pointer-events-none" />
 
+            {/* Flashlight Overlay */}
+            <div 
+              className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-10"
+              style={{ 
+                opacity: isFlashlightOn ? 1 : 0,
+                background: 'radial-gradient(circle at 15% 85%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 60%)'
+              }} 
+            />
+
+            {/* Camera Flash Overlay */}
+            <div 
+              className={`absolute inset-0 z-[1000] bg-white pointer-events-none transition-opacity duration-75 ${isCameraFlashing ? 'opacity-100' : 'opacity-0'}`} 
+            />
+
             {/* iOS Status Bar */}
             <div className="absolute top-0 inset-x-0 h-14 flex items-center justify-between px-8 text-white/80 z-20 pointer-events-none" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
               <div className="text-[15px] font-semibold tracking-tight">
@@ -216,7 +241,7 @@ export default function Home() {
                     return h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
                   })() : "Welcome"}
                 </p>
-                <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-[#10b981] text-5xl md:text-6xl font-bold tracking-tight whitespace-nowrap drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-[#10b981] text-5xl md:text-6xl font-bold tracking-tight whitespace-nowrap drop-shadow-[0_0_15px_rgba(16,185,129,0.2)] pb-2 pt-1" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                   {content.hero.fullName}
                 </h1>
                 <p className="text-gray-400 text-[10px] mt-4 font-mono-spaced tracking-[0.2em] uppercase">
@@ -242,12 +267,18 @@ export default function Home() {
               className="absolute bottom-12 inset-x-0 flex items-center justify-between px-10 md:px-16 z-20 pointer-events-none"
             >
               {/* Flashlight Button */}
-              <div className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all">
-                <Flashlight className="w-[22px] h-[22px] text-white/90" />
+              <div 
+                onClick={() => setIsFlashlightOn(!isFlashlightOn)}
+                className={`w-[50px] h-[50px] rounded-full backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:scale-95 transition-all ${isFlashlightOn ? 'bg-white text-black' : 'bg-white/10 text-white/90 active:bg-white/20'}`}
+              >
+                <Flashlight className="w-[22px] h-[22px]" />
               </div>
               {/* Camera Button */}
-              <div className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all">
-                <Camera className="w-[22px] h-[22px] text-white/90" />
+              <div 
+                onClick={handleCameraClick}
+                className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all text-white/90"
+              >
+                <Camera className="w-[22px] h-[22px]" />
               </div>
             </motion.div>
           </motion.div>
