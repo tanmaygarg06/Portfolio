@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence, useDragControls, useAnimation } from "framer-motion";
-import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2 } from "lucide-react";
+import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2, Camera, Wifi, Battery, Signal, Zap, Flashlight } from "lucide-react";
 import { ActivityCalendar } from 'react-activity-calendar';
 import KineticGrid from "@/components/ui/kinetic-grid";
 import Dock from "@/components/Dock";
@@ -162,6 +162,18 @@ export default function Home() {
             {/* Dark overlay to make lockscreen elements pop */}
             <div className="absolute inset-0 bg-[#0a0a0b]/40 pointer-events-none" />
 
+            {/* iOS Status Bar */}
+            <div className="absolute top-0 inset-x-0 h-14 flex items-center justify-between px-8 text-white/80 z-20 pointer-events-none" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+              <div className="text-[15px] font-semibold tracking-tight">
+                CLOUD_NET
+              </div>
+              <div className="flex items-center gap-2">
+                <Signal className="w-[18px] h-[18px]" />
+                <Wifi className="w-[18px] h-[18px]" />
+                <Battery className="w-6 h-6 ml-1" />
+              </div>
+            </div>
+
             {/* Lockscreen Time/Date Header */}
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
@@ -221,6 +233,23 @@ export default function Home() {
                 <SwipeToStart onUnlock={() => setIsLoading(false)} />
               </motion.div>
             </div>
+
+            {/* iOS Bottom Edge Buttons */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 1 }}
+              className="absolute bottom-12 inset-x-0 flex items-center justify-between px-10 md:px-16 z-20 pointer-events-none"
+            >
+              {/* Flashlight Button */}
+              <div className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all">
+                <Flashlight className="w-[22px] h-[22px] text-white/90" />
+              </div>
+              {/* Camera Button */}
+              <div className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all">
+                <Camera className="w-[22px] h-[22px] text-white/90" />
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
