@@ -150,142 +150,61 @@ export default function Home() {
           <motion.div
             key="loader"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+            exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[999] bg-[#050505] flex flex-col items-center justify-center overflow-hidden"
+            className="fixed inset-0 z-[999] bg-[#0a0a0b] flex flex-col items-center justify-between overflow-hidden py-24"
           >
-            {/* Animated Background Mesh Gradient */}
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3],
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#10b981]/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen"
-            />
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.5, 1],
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen"
-            />
+            {/* Same grid as OS for seamless transition */}
+            <div className="absolute inset-0 pointer-events-none">
+              <KineticGrid globalColor="default" />
+            </div>
             
-            {/* Cinematic Moving Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+            {/* Dark overlay to make lockscreen elements pop */}
+            <div className="absolute inset-0 bg-[#0a0a0b]/40 pointer-events-none" />
 
-            {/* --- PERIPHERAL HUD ELEMENTS --- */}
-            {/* Viewfinder crosshairs */}
-            <div className="absolute top-8 left-8 w-8 h-8 border-t border-l border-white/10 pointer-events-none hidden md:block" />
-            <div className="absolute top-8 right-8 w-8 h-8 border-t border-r border-white/10 pointer-events-none hidden md:block" />
-            <div className="absolute bottom-8 left-8 w-8 h-8 border-b border-l border-white/10 pointer-events-none hidden md:block" />
-            <div className="absolute bottom-8 right-8 w-8 h-8 border-b border-r border-white/10 pointer-events-none hidden md:block" />
+            {/* Lockscreen Time/Date Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 1 }}
+              className="z-10 flex flex-col items-center mt-12"
+            >
+              <h2 className="text-white text-7xl md:text-8xl font-light tracking-tighter mb-2">
+                {time ? format(time, "HH:mm") : "00:00"}
+              </h2>
+              <p className="text-gray-400 font-mono-spaced text-[10px] md:text-xs tracking-widest uppercase">
+                {time ? format(time, "EEEE, MMMM d") : ""}
+              </p>
+            </motion.div>
 
-            {/* Top Left: Terminal output */}
-            <div className="absolute top-10 left-12 font-mono-spaced text-[9px] text-emerald-500/50 hidden md:block pointer-events-none">
-              <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1.5 }} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" /> REC_
+            {/* Swipe to Start Section */}
+            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8 mb-12">
+              {/* Profile/Name identifier */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="flex flex-col items-center mb-10"
+              >
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)] flex items-center justify-center mb-4">
+                  <span className="text-white text-xl md:text-2xl font-light">{content.hero.firstName[0]}{(content.hero.fullName.split(' ')[1] || '')[0] || ''}</span>
+                </div>
+                <h1 className="text-white text-xl tracking-widest font-light">
+                  {content.hero.fullName}
+                </h1>
+                <p className="text-gray-500 font-mono-spaced text-[9px] tracking-[0.3em] mt-2">
+                  LOCKED
+                </p>
               </motion.div>
-              <div className="mt-2 text-gray-500">SYS.CORE.v2.4.9</div>
-              <div className="text-gray-500">MEM: OPTIMAL</div>
-              <div className="text-gray-500">NET: UPLINK_ESTABLISHED</div>
-            </div>
 
-            {/* Top Right: Radar / Scanner */}
-            <div className="absolute top-10 right-12 hidden md:flex items-center justify-center w-12 h-12 border border-white/5 rounded-full pointer-events-none">
-              <motion.div 
-                animate={{ rotate: 360 }} 
-                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                className="absolute inset-0 border-t-2 border-emerald-500/40 rounded-full"
-              />
-              <motion.div 
-                animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }} 
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="w-1.5 h-1.5 bg-emerald-500/50 rounded-full" 
-              />
-            </div>
-
-            {/* Bottom Left: Hex codes */}
-            <div className="absolute bottom-10 left-12 font-mono-spaced text-[8px] text-gray-600 hidden md:flex flex-col gap-1 pointer-events-none">
-              <div>0x00A1F3</div>
-              <div>0x00B2E1</div>
-              <div>0x00C4F9</div>
-              <motion.div animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="text-emerald-500/60 mt-1">
-                _AWAITING_INPUT
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.8 }}
+                className="w-full flex justify-center"
+              >
+                <SwipeToStart onUnlock={() => setIsLoading(false)} />
               </motion.div>
-            </div>
-
-            {/* Bottom Right: Barcode */}
-            <div className="absolute bottom-10 right-12 hidden md:flex items-end gap-[3px] opacity-30 pointer-events-none">
-               {[12, 24, 15, 30, 10, 20, 14, 28, 16, 22, 10, 30, 18, 12, 25].map((h, i) => (
-                 <motion.div 
-                   key={i} 
-                   animate={{ opacity: [0.3, 1, 0.3] }}
-                   transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
-                   style={{ height: h }}
-                   className="w-[2px] bg-white" 
-                 />
-               ))}
-            </div>
-
-            <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
-              {/* Stunning Text Reveal */}
-              <div className="relative mb-12 w-full flex flex-col items-center">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-                  className="relative z-10"
-                >
-                  <h1 className="title-serif text-5xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 text-center tracking-wider">
-                    {content.hero.fullName}
-                  </h1>
-                </motion.div>
-                
-                {/* High-tech animated underline */}
-                <motion.div
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: "80%", opacity: 1 }}
-                  transition={{ duration: 1.5, delay: 1, ease: "easeInOut" }}
-                  className="h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent mt-6 relative"
-                >
-                  <motion.div 
-                    animate={{ x: ["-100%", "300%"] }}
-                    transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                    className="absolute top-0 bottom-0 left-0 w-1/4 bg-white/40 blur-[1px]"
-                  />
-                </motion.div>
-
-                {/* Glow behind text */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 2, delay: 0.5 }}
-                  className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 blur-2xl -z-10"
-                />
-              </div>
-
-              <div className="w-full relative z-10 flex flex-col items-center mt-2">
-                {/* Instruction Text */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2, duration: 1 }}
-                  className="font-mono-spaced text-[8px] text-emerald-500/70 mb-6 tracking-[0.3em] text-center uppercase"
-                >
-                  ACCESS PROTOCOL REQUIRED
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4, duration: 0.8 }}
-                  className="w-full flex justify-center"
-                >
-                  <SwipeToStart onUnlock={() => setIsLoading(false)} />
-                </motion.div>
-              </div>
             </div>
           </motion.div>
         )}
