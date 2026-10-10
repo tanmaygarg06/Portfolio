@@ -167,34 +167,34 @@ export default function Home() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 1 }}
-              className="z-10 flex flex-col items-center mt-12"
+              className="z-10 flex flex-col items-center mt-16"
             >
-              <h2 className="text-white text-7xl md:text-8xl font-light tracking-tighter mb-2">
-                {time ? format(time, "HH:mm") : "00:00"}
+              <h2 className="text-white text-[80px] md:text-[100px] font-semibold tracking-tighter mb-2 leading-none" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                {time ? time.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true }).replace(/^0/, '') : "00:00 AM"}
               </h2>
-              <p className="text-gray-400 font-mono-spaced text-[10px] md:text-xs tracking-widest uppercase">
-                {time ? format(time, "EEEE, MMMM d") : ""}
+              <p className="text-gray-200 text-xl md:text-2xl font-medium tracking-wide" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                {time ? time.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata', weekday: 'long', month: 'long', day: 'numeric' }) : ""}
               </p>
             </motion.div>
 
             {/* Swipe to Start Section */}
-            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8 mb-12">
+            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8 mb-16">
               {/* Profile/Name identifier */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.6 }}
-                className="flex flex-col items-center mb-10"
+                className="flex flex-col items-center mb-12 text-center"
               >
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)] flex items-center justify-center mb-4">
-                  <span className="text-white text-xl md:text-2xl font-light">{content.hero.firstName[0]}{(content.hero.fullName.split(' ')[1] || '')[0] || ''}</span>
-                </div>
-                <h1 className="text-white text-xl tracking-widest font-light">
+                <p className="text-gray-300 text-2xl md:text-3xl font-light mb-2" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                  {time ? (() => {
+                    const h = parseInt(time.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false }), 10);
+                    return h < 12 ? 'Good Morning,' : h < 17 ? 'Good Afternoon,' : 'Good Evening,';
+                  })() : "Welcome,"}
+                </p>
+                <h1 className="text-white text-5xl md:text-6xl font-semibold tracking-tight" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
                   {content.hero.fullName}
                 </h1>
-                <p className="text-gray-500 font-mono-spaced text-[9px] tracking-[0.3em] mt-2">
-                  LOCKED
-                </p>
               </motion.div>
 
               <motion.div
