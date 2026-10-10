@@ -49,20 +49,27 @@ export default function SwipeToStart({ onUnlock }: SwipeToStartProps) {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full max-w-sm h-16 bg-[#111] rounded-full border border-white/10 flex items-center p-1 overflow-hidden touch-none"
+      className="relative w-full max-w-sm h-16 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 flex items-center p-1 overflow-hidden touch-none shadow-[0_0_40px_rgba(0,0,0,0.5)]"
     >
-      {/* Dynamic Background */}
+      {/* Dynamic Background Glow on swipe */}
       <motion.div 
-        className="absolute inset-0 bg-emerald-500/20 pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/60 pointer-events-none"
         style={{ opacity: bgOpacity }}
       />
       
-      {/* Background Text */}
+      {/* Continuous scanning laser effect */}
+      <motion.div 
+        animate={{ x: ["-100%", "300%"] }}
+        transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
+        className="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
+      />
+      
+      {/* Background Text with shimmering effect */}
       <motion.div 
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         style={{ opacity: textOpacity }}
       >
-        <span className="font-mono-spaced text-[11px] text-gray-500 tracking-[0.2em] ml-10">
+        <span className="font-mono-spaced text-[11px] tracking-[0.25em] ml-12 text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-gray-200 to-gray-500 animate-pulse">
           SWIPE TO INITIALIZE
         </span>
       </motion.div>
@@ -76,16 +83,25 @@ export default function SwipeToStart({ onUnlock }: SwipeToStartProps) {
         onDragEnd={handleDragEnd}
         animate={controls}
         style={{ x }}
-        className="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-10 shrink-0"
+        className="relative w-14 h-14 bg-white text-black rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-10 shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
       >
+        {/* Pulsing ring around knob */}
+        {!isUnlocked && (
+          <motion.div 
+            animate={{ scale: [1, 1.5], opacity: [0.8, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full border border-white pointer-events-none"
+          />
+        )}
+        
         {isUnlocked ? (
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-3 h-3 bg-emerald-500 rounded-full"
+            className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_15px_#10b981]"
           />
         ) : (
-          <ChevronRight className="w-6 h-6 text-[#0a0a0b]" />
+          <ChevronRight className="w-6 h-6 text-[#0a0a0b] ml-0.5" />
         )}
       </motion.div>
     </div>

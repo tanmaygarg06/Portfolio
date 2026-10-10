@@ -150,27 +150,58 @@ export default function Home() {
           <motion.div
             key="loader"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
+            exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[999] bg-[#0a0a0b] flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[999] bg-[#050505] flex flex-col items-center justify-center overflow-hidden"
           >
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            {/* Animated Background Mesh Gradient */}
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.3],
+              }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#10b981]/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen"
+            />
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.5, 1],
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen"
+            />
+            
+            {/* Cinematic Moving Grid */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
 
             <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
-              <motion.h1
-                initial={{ opacity: 0, y: 15, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="title-serif text-5xl md:text-6xl text-white mb-12 tracking-wide text-center relative z-10"
-              >
-                {content.hero.fullName}
-              </motion.h1>
-
-              <div className="w-full relative z-10 flex flex-col items-center mt-8">
+              {/* Stunning Text Reveal */}
+              <div className="relative mb-16">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
+                  className="relative z-10"
+                >
+                  <h1 className="title-serif text-5xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 text-center tracking-wider">
+                    {content.hero.fullName}
+                  </h1>
+                </motion.div>
+                {/* Glow behind text */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 2, delay: 0.5 }}
+                  className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 blur-2xl -z-10"
+                />
+              </div>
+
+              <div className="w-full relative z-10 flex flex-col items-center mt-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.8 }}
+                  transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
                   className="w-full flex justify-center"
                 >
                   <SwipeToStart onUnlock={() => setIsLoading(false)} />
