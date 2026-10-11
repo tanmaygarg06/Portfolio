@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Quicksand, Space_Mono } from "next/font/google";
 import "./globals.css";
+import "react-activity-calendar/tooltips.css";
 import { content } from "@/data/content";
 
 const instrumentSerif = Instrument_Serif({

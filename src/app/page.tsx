@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, cloneElement } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence, useDragControls, useAnimation } from "framer-motion";
 import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2, Camera, Wifi, Battery, Signal, Zap, Flashlight, Play, Pause, SkipBack, SkipForward, Music } from "lucide-react";
@@ -51,6 +51,7 @@ export default function Home() {
 
   // New Features State
   const [leetcodeData, setLeetcodeData] = useState<{calendar: any[], totalActiveDays: number, streak: number} | null>(null);
+  const [hoveredActivity, setHoveredActivity] = useState<{ date: string; count: number; level: number } | null>(null);
   
   // Metrics State
   const [cpuUsage, setCpuUsage] = useState(34);
@@ -405,9 +406,22 @@ export default function Home() {
         {/* LeetCode Heatmap Widget */}
         <motion.div drag dragControls={leetcodeDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="relative xl:absolute xl:bottom-24 xl:right-8 xl:right-12 w-full xl:w-[480px] md:h-full xl:h-auto md:min-h-[200px] xl:min-h-0 bg-[#111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 z-20 cursor-grab active:cursor-grabbing mb-6 md:mb-0 xl:mb-0 mx-auto overflow-x-auto overflow-y-hidden hide-scrollbar flex flex-col md:col-span-2 lg:col-span-2">
             <div onPointerDown={(e) => leetcodeDrag.start(e)} className="w-full py-2 -mt-2 mb-2 flex justify-center touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
-          <div className="flex justify-between items-center mb-4">
-            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">LEETCODE ACTIVITY {leetcodeData && <span className="text-[#10b981] lowercase">({leetcodeData.totalActiveDays} active days)</span>}</span>
-            <div className="w-2 h-2 rounded-full bg-[#10b981]" />
+          <div className="flex justify-between items-center mb-4 min-h-[20px]">
+            <span className="font-mono-spaced text-[10px] text-gray-400 tracking-widest flex items-center gap-2">
+              {hoveredActivity ? (
+                <>
+                  <span className="text-white font-bold tracking-normal font-sans text-xs">
+                    {format(new Date(hoveredActivity.date + "T00:00:00"), "MMMM d, yyyy")}
+                  </span>
+                  <span className="text-[#10b981] font-mono-spaced text-[10px]">
+                    • {hoveredActivity.count} {hoveredActivity.count === 1 ? 'SOLVED' : 'SOLVED'}
+                  </span>
+                </>
+              ) : (
+                <>LEETCODE ACTIVITY {leetcodeData && <span className="text-[#10b981] lowercase">({leetcodeData.totalActiveDays} active days)</span>}</>
+              )}
+            </span>
+            <div className={`w-2 h-2 rounded-full transition-all duration-300 ${hoveredActivity ? (hoveredActivity.count > 0 ? 'bg-[#10b981] shadow-[0_0_8px_#10b981]' : 'bg-gray-400') : 'bg-[#10b981]'}`} />
           </div>
           <div className="opacity-80 flex justify-center text-[10px] font-mono-spaced w-full overflow-hidden min-h-[120px]">
             {leetcodeData ? (
@@ -419,6 +433,20 @@ export default function Home() {
                 }}
                 colorScheme="dark"
                 showTotalCount={false}
+                renderBlock={(block, activity) => 
+                  cloneElement(block, {
+                    onMouseEnter: () => setHoveredActivity(activity),
+                    onMouseLeave: () => setHoveredActivity(null),
+                    className: "cursor-pointer transition-transform hover:scale-125"
+                  })
+                }
+                tooltips={{
+                  activity: {
+                    text: (activity) => `${format(new Date(activity.date + "T00:00:00"), "MMM d, yyyy")}: ${activity.count} solved`,
+                    withArrow: true,
+                    offset: 8
+                  }
+                }}
               />
             ) : (
               <div className="flex items-center justify-center h-full w-full text-gray-500 animate-pulse">syncing with leetcode...</div>
