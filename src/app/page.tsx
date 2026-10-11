@@ -2,13 +2,12 @@
 import { useState, useEffect, cloneElement } from "react";
 import { format } from "date-fns";
 import { motion, AnimatePresence, useDragControls, useAnimation } from "framer-motion";
-import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2, Camera, Wifi, Battery, Signal, Zap, Flashlight, Play, Pause, SkipBack, SkipForward, Music } from "lucide-react";
+import { ArrowUpRight, Award, Send, Server, Activity, Database, BarChart2 } from "lucide-react";
 import { ActivityCalendar } from 'react-activity-calendar';
 import KineticGrid from "@/components/ui/kinetic-grid";
 import Dock from "@/components/Dock";
 import Window from "@/components/Window";
 import Terminal from "@/components/Terminal";
-import SwipeToStart from "@/components/SwipeToStart";
 import { content } from "@/data/content";
 
 export default function Home() {
@@ -31,18 +30,6 @@ export default function Home() {
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Lockscreen Actions State
-  const [isFlashlightOn, setIsFlashlightOn] = useState(false);
-  const [isCameraFlashing, setIsCameraFlashing] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  
-  const handleCameraClick = () => {
-    setIsCameraFlashing(true);
-    setTimeout(() => {
-      setIsCameraFlashing(false);
-    }, 150);
-  };
-
   // Contact Form State
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
@@ -81,6 +68,13 @@ export default function Home() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4500);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -163,134 +157,83 @@ export default function Home() {
           <motion.div
             key="loader"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+            exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[999] bg-[#0a0a0b] flex flex-col items-center justify-between overflow-hidden py-24"
+            className="fixed inset-0 z-[999] bg-[#0a0a0b] flex flex-col items-center justify-center"
           >
-            {/* Same grid as OS for seamless transition */}
-            <div className="absolute inset-0 pointer-events-none">
-              <KineticGrid globalColor="default" />
-            </div>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
-            {/* Aurora / Mesh Gradient Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
-              <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-emerald-500/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '8s' }} />
-              <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
-              <div className="absolute -bottom-[20%] left-[20%] w-[80%] h-[80%] rounded-full bg-purple-500/20 blur-[120px] mix-blend-screen animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }} />
-            </div>
-            
-            {/* Dark overlay to make lockscreen elements pop */}
-            <div className="absolute inset-0 bg-[#0a0a0b]/40 pointer-events-none" />
+            <div className="z-10 flex flex-col items-center w-full max-w-md px-8 relative">
+              <motion.h1
+                initial={{ opacity: 0, y: 15, filter: "blur(10px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="title-serif text-5xl md:text-6xl text-white mb-12 tracking-wide text-center relative z-10"
+              >
+                {content.hero.fullName}
+              </motion.h1>
 
-            {/* Flashlight Overlay */}
-            <div 
-              className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-10"
-              style={{ 
-                opacity: isFlashlightOn ? 1 : 0,
-                background: 'radial-gradient(circle at 15% 85%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 60%)'
-              }} 
-            />
-
-            {/* Camera Flash Overlay */}
-            <div 
-              className={`absolute inset-0 z-[1000] bg-white pointer-events-none transition-opacity duration-75 ${isCameraFlashing ? 'opacity-100' : 'opacity-0'}`} 
-            />
-
-            {/* iOS Status Bar */}
-            <div className="absolute top-0 inset-x-0 h-14 flex items-center justify-between px-8 text-white/80 z-20 pointer-events-none" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-              <div className="text-[15px] font-semibold tracking-tight">
-                CLOUD_NET
-              </div>
-              <div className="flex items-center gap-2">
-                <Signal className="w-[18px] h-[18px]" />
-                <Wifi className="w-[18px] h-[18px]" />
-                <Battery className="w-6 h-6 ml-1" />
-              </div>
-            </div>
-
-            {/* Lockscreen Time/Date Header */}
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 1 }}
-              className="z-10 flex flex-col items-center mt-16"
-            >
-              <h2 className="text-white text-[80px] md:text-[100px] font-semibold tracking-tighter mb-2 leading-none drop-shadow-lg" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                {time ? time.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true }).replace(/^0/, '') : "00:00 AM"}
-              </h2>
-              <p className="text-gray-200 text-xl md:text-2xl font-medium tracking-wide drop-shadow-md" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                {time ? time.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata', weekday: 'long', month: 'long', day: 'numeric' }) : ""}
-              </p>
-              
-              {/* iOS Style Lockscreen Widgets */}
-              <div className="flex items-center gap-4 mt-6">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                  <Activity className="w-3.5 h-3.5 text-[#10b981]" />
-                  <span className="text-white/80 text-xs font-medium">Status: Online</span>
+              <div className="w-full relative z-10">
+                <div className="flex justify-between font-mono-spaced text-[10px] text-gray-400 mb-3 tracking-widest uppercase">
+                  <span>System Initialization</span>
+                  <motion.span 
+                    animate={{ opacity: [1, 0] }} 
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="text-[#10b981]"
+                  >
+                    _BOOTING
+                  </motion.span>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                  <Server className="w-3.5 h-3.5 text-[#10b981]" />
-                  <span className="text-white/80 text-xs font-medium">Systems Nominal</span>
+                
+                <div className="h-[3px] w-full bg-white/10 rounded-full overflow-hidden relative mb-5">
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 3.8, delay: 0.2, ease: "circInOut" }}
+                    className="h-full bg-[#10b981] relative overflow-hidden"
+                  >
+                    {/* Shimmer effect inside the loading bar */}
+                    <motion.div 
+                      animate={{ x: ["-100%", "200%"] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                      className="absolute top-0 bottom-0 left-0 w-1/2 bg-white/40 blur-[2px]"
+                    />
+                  </motion.div>
+                </div>
+                
+                {/* Boot Sequence Terminal Text */}
+                <div className="font-mono-spaced text-[9px] md:text-[10px] text-gray-500 tracking-widest flex flex-col gap-2 h-20 overflow-hidden">
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> CORE MODULES LOADED
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> ESTABLISHED SECURE UPLINK
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 2.5 }}
+                  >
+                    <span className="text-[#10b981] mr-2">[OK]</span> VIRTUAL WORKSPACE MOUNTED
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 3.5 }}
+                  >
+                    <span className="text-emerald-400 animate-pulse mr-2">[&gt;&gt;]</span> INITIATING INTERFACE...
+                  </motion.div>
                 </div>
               </div>
-            </motion.div>
-
-
-            {/* Swipe to Start Section */}
-            <div className="z-10 flex flex-col items-center w-full max-w-sm px-8 mb-16">
-              {/* Profile/Name identifier */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.6 }}
-                className="flex flex-col items-center mb-12 text-center"
-              >
-                <p className="text-[#10b981] text-xs font-semibold mb-2 tracking-[0.2em] uppercase" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                  {time ? (() => {
-                    const h = parseInt(time.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false }), 10);
-                    return h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-                  })() : "Welcome"}
-                </p>
-                <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-[#10b981] text-5xl md:text-6xl font-bold tracking-tight whitespace-nowrap drop-shadow-[0_0_15px_rgba(16,185,129,0.2)] pb-2 pt-1" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                  {content.hero.fullName}
-                </h1>
-                <p className="text-gray-400 text-[10px] mt-4 font-mono-spaced tracking-[0.2em] uppercase">
-                  {content.hero.subtitle}
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.8 }}
-                className="w-full flex justify-center"
-              >
-                <SwipeToStart onUnlock={() => setIsLoading(false)} />
-              </motion.div>
             </div>
-
-            {/* iOS Bottom Edge Buttons */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 1 }}
-              className="absolute bottom-12 inset-x-0 flex items-center justify-between px-10 md:px-16 z-20 pointer-events-none"
-            >
-              {/* Flashlight Button */}
-              <div 
-                onClick={() => setIsFlashlightOn(!isFlashlightOn)}
-                className={`w-[50px] h-[50px] rounded-full backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:scale-95 transition-all ${isFlashlightOn ? 'bg-white text-black' : 'bg-white/10 text-white/90 active:bg-white/20'}`}
-              >
-                <Flashlight className="w-[22px] h-[22px]" />
-              </div>
-              {/* Camera Button */}
-              <div 
-                onClick={handleCameraClick}
-                className="w-[50px] h-[50px] rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg pointer-events-auto cursor-pointer active:bg-white/20 active:scale-95 transition-all text-white/90"
-              >
-                <Camera className="w-[22px] h-[22px]" />
-              </div>
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
