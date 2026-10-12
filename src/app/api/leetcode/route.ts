@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const query = `query userProfileCalendar($username: String!, $year: Int) {
     matchedUser(username: $username) {
@@ -20,7 +23,7 @@ export async function GET() {
         'User-Agent': 'Mozilla/5.0',
       },
       body: JSON.stringify({ query, variables: { username: 'tanmay_garg06' } }),
-      next: { revalidate: 3600 } // cache for 1 hour
+      cache: 'no-store'
     });
 
     const data = await response.json();
@@ -31,44 +34,34 @@ export async function GET() {
 
     const calendar = JSON.parse(data.data.matchedUser.userCalendar.submissionCalendar);
     
-    // Convert UNIX timestamps to date strings expected by react-activity-calendar
-    // Format: { date: "YYYY-MM-DD", count: number, level: 0-4 }
-    
-    const activityData: { date: string, count: number, level: number }[] = [];
-    
-    // Create a date exactly 365 days ago
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    
-    // Iterate day by day for the last year to fill missing days with 0
-    for (let d = new Date(oneYearAgo); d <= new Date(); d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      // LeetCode's timestamps are start of day UTC
-      const timestamp = Math.floor(d.getTime() / 1000).toString();
-      
-      // We also check neighboring timestamps just in case of timezone offsets
-      // A more robust way is to map all LeetCode timestamps to their YYYY-MM-DD strings first
-      activityData.push({
-        date: dateStr,
-        count: 0,
-        level: 0
-      });
-    }
-
-    // Now map LeetCode timestamps to actual days
+    // Map LeetCode timestamps (start of day UTC) to date strings
     const dateMap = new Map<string, number>();
+    let latestSubmissionDate = "";
+    
     for (const [timestamp, count] of Object.entries(calendar)) {
       const date = new Date(parseInt(timestamp) * 1000);
       const dateStr = date.toISOString().split('T')[0];
       dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + (count as number));
+      if (!latestSubmissionDate || dateStr > latestSubmissionDate) {
+        latestSubmissionDate = dateStr;
+      }
     }
 
-    // Merge actual data into our 365-day array and calculate levels
-    let maxCount = 0;
-    dateMap.forEach(count => { if (count > maxCount) maxCount = count; });
+    // Determine target end date (either today UTC or latest submission date, whichever is newer)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const endDateStr = latestSubmissionDate > todayStr ? latestSubmissionDate : todayStr;
+    const endDate = new Date(endDateStr + "T00:00:00Z");
 
-    const finalData = activityData.map(day => {
-      const count = dateMap.get(day.date) || 0;
+    // Start 365 days prior to endDate
+    const startDate = new Date(endDate);
+    startDate.setUTCDate(startDate.getUTCDate() - 364);
+
+    const activityData: { date: string, count: number, level: number }[] = [];
+    const curDate = new Date(startDate);
+
+    while (curDate <= endDate) {
+      const dateStr = curDate.toISOString().split('T')[0];
+      const count = dateMap.get(dateStr) || 0;
       let level = 0;
       if (count > 0) {
         if (count >= 4) level = 4;
@@ -76,14 +69,24 @@ export async function GET() {
         else if (count >= 2) level = 2;
         else level = 1;
       }
-      return { ...day, count, level };
-    });
+      activityData.push({ date: dateStr, count, level });
+      curDate.setUTCDate(curDate.getUTCDate() + 1);
+    }
 
-    return NextResponse.json({
-      totalActiveDays: data.data.matchedUser.userCalendar.totalActiveDays,
-      streak: data.data.matchedUser.userCalendar.streak,
-      calendar: finalData
-    });
+    return NextResponse.json(
+      {
+        totalActiveDays: data.data.matchedUser.userCalendar.totalActiveDays,
+        streak: data.data.matchedUser.userCalendar.streak,
+        calendar: activityData
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'CDN-Cache-Control': 'no-store',
+          'Vercel-CDN-Cache-Control': 'no-store'
+        }
+      }
+    );
 
   } catch (error) {
     console.error("LeetCode API Error:", error);

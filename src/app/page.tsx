@@ -46,7 +46,7 @@ export default function Home() {
   const [networkLatency, setNetworkLatency] = useState(45);
 
   useEffect(() => {
-    fetch('/api/leetcode')
+    fetch(`/api/leetcode?t=${Date.now()}`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
          if (data.calendar) setLeetcodeData(data);
@@ -261,7 +261,7 @@ export default function Home() {
             
             {/* Inline Portrait */}
             <div className="xl:hidden w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border border-white/20 overflow-hidden shrink-0 shadow-xl bg-[#111]/80 flex items-center justify-center mt-1">
-              <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
+              <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" />
             </div>
           </div>
           <div className="pl-6 border-l border-white/10 mb-8 pointer-events-auto">
@@ -280,7 +280,7 @@ export default function Home() {
         {/* Desktop Portrait Widget */}
         <motion.div drag dragControls={portraitDrag} dragListener={!isMobile} dragMomentum={false} animate={resetControls} className="hidden xl:flex absolute xl:top-24 xl:left-1/2 xl:-translate-x-1/2 w-64 h-64 border border-white/10 rounded-2xl bg-[#111]/80 backdrop-blur-md overflow-hidden z-20 flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none pointer-events-auto shadow-2xl">
           <div onPointerDown={(e) => portraitDrag.start(e)} className="absolute top-0 left-0 w-full h-8 flex items-center justify-center z-10 touch-none cursor-grab active:cursor-grabbing"><div className="w-8 h-1 bg-white/20 rounded-full" /></div>
-          <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" style={{ imageRendering: 'high-quality' as any }} />
+          <img src="/portrait.png" alt="Portrait" className="w-full h-full object-cover pointer-events-none" />
         </motion.div>
 
         {/* Status & Quote Column Wrapper (Stacked in Grid, Independent in OS) */}
