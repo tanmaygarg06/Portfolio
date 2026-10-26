@@ -71,12 +71,9 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
             setProcessState(state);
           } else if (state.step === 4) {
             state.email = cmd;
+            output = "Thank you for showing interest in hiring me! Once I read all requirements, I will respond to you promptly.";
             setProcessState(null);
-
-            newHistory.push({ type: 'output', text: "[TRANSMITTING] Dispatching hire request to Tanmay..." });
-            setHistory(newHistory);
-            setInput("");
-
+            
             fetch('/api/contact', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -85,38 +82,7 @@ export default function Terminal({ isOpen, onClose, zIndex, onFocus }: TerminalP
                 email: state.email,
                 message: `[TERMINAL HIRE REQUEST]\nRole: ${state.role}\nSalary/Stipend: ${state.salary}`
               })
-            })
-              .then(async (res) => {
-                const data = await res.json().catch(() => ({}));
-                if (res.ok && data.success) {
-                  setHistory(prev => [
-                    ...prev,
-                    {
-                      type: 'output',
-                      text: `[OK] Message delivered! A confirmation email has been sent to ${state.email}. Tanmay will review your inquiry shortly.`
-                    }
-                  ]);
-                } else {
-                  setHistory(prev => [
-                    ...prev,
-                    {
-                      type: 'output',
-                      text: `[ERROR] ${data.error || 'Failed to dispatch email'}. Reach Tanmay directly at tanmaylkgarg@gmail.com.`
-                    }
-                  ]);
-                }
-              })
-              .catch(() => {
-                setHistory(prev => [
-                  ...prev,
-                  {
-                    type: 'output',
-                    text: `[ERROR] Network error transmitting request. Please email directly at tanmaylkgarg@gmail.com.`
-                  }
-                ]);
-              });
-
-            return;
+            }).catch(console.error);
           }
         } else if (processState.type === 'theme') {
           if (cmd === '1') {
